@@ -63,8 +63,10 @@ def iter_user_inputs(path: Path):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_path", type=str, required=True, 
+    parser.add_argument("--input_path", type=str, default=None,
                        help="输入数据路径 Input data path，如 e.g. data/sev.jsonl 或 data/test_set.jsonl")
+    parser.add_argument("--both", action="store_true",
+                       help="处理sev和test_set两个数据集 Process both sev and test_set datasets")
     parser.add_argument("--model", type=str, default="meta-llama/Llama-3.2-3B-Instruct",
                        help="模型名称 Model name")
     parser.add_argument("--device", type=str, default="auto",
@@ -86,11 +88,16 @@ def main():
     parser.add_argument("--no_skip", action="store_true", 
                        help="重新处理所有项目 Reprocess all items")
     args = parser.parse_args()
-
-    # 解析输入路径，提取数据集名称
-    # Parse input path and extract dataset name
-    data_path = Path(args.input_path)
-    dataset_name = data_path.stem  # sev 或 test_set
+    
+    # 确定输入文件列表
+    # Determine input file list
+    if args.both:
+        input_paths = [Path("data/sev.jsonl"), Path("data/test_set.jsonl")]
+    elif args.input_path:
+        input_paths = [Path(args.input_path)]
+    else:
+        parser.error("必须指定 --input_path 或 --both | Must specify --input_path or --both")
+        return
     
     # 从模型名称生成简化的文件夹名
     # Generate simplified folder name from model name
@@ -100,27 +107,6 @@ def main():
         model_folder = 'llama32_3b'
     else:
         model_folder = model_name  # 其他模型使用原名 Use original name for other models
-    
-    # 构建输出路径
-    # Build output path: outputs/{model_folder}/01_emotion_elicited_generation_prompt_based/generated/{dataset_name}_generated.jsonl
-    out_dir = Path("outputs") / model_folder / "01_emotion_elicited_generation_prompt_based" / "generated"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    
-    jsonl_path = out_dir / f"{dataset_name}_generated.jsonl"
-    
-    # 加载已存在的 keys（用于断点续跑）
-    # Load existing keys (for resuming from checkpoint)
-    existing_keys = set()
-    if args.skip_if_exists and not args.no_skip and jsonl_path.exists():
-        with open(jsonl_path, "r", encoding="utf-8") as f:
-            for line in f:
-                try:
-                    obj = json.loads(line.strip())
-                    if "key" in obj:
-                        existing_keys.add(obj["key"])
-                except:
-                    continue
-
 
     # 数据类型映射
     # Data type mapping
@@ -128,8 +114,9 @@ def main():
     torch_dtype = dmap[args.dtype]
     torch.manual_seed(args.seed)
 
-    # 加载分词器和模型
-    # Load tokenizer and model
+    # 加载分词器和模型（只加载一次）
+    # Load tokenizer and model (only once)
+    print("Loading tokenizer and model...")
     tok = AutoTokenizer.from_pretrained(args.model, use_fast=True, token=HF_TOKEN)
     if tok.pad_token_id is None:
         tok.pad_token = tok.eos_token
@@ -142,94 +129,130 @@ def main():
         token=HF_TOKEN
     )
     model.eval()
+    print(f"Model loaded on device: {model.device}\n")
 
     emotions = [e.strip() for e in args.emotions.split(",") if e.strip()]
     valences = [v.strip() for v in args.valences.split(",") if v.strip()]
-
-    total = 0
-    skipped = 0
-    start = time.time()
-
-    with open(jsonl_path, "a", encoding="utf-8") as fout:
-        for item in iter_user_inputs(data_path):
-            theme    = item.get("theme", "")
-            scenario = item["scenario"]
-            events   = item["event"]          # dict: positive/neutral/negative 事件字典
-            sid      = item.get("skeleton_id", "unknown")
-
-            for val in valences:
-                if val not in events: continue
-                event = events[val]
-
-                for emo in emotions:
-                    key = f"{sid}__{val}__{emo}".replace("/", "_")
-
-                    # 断点续跑检查
-                    # Checkpoint resuming check
-                    if key in existing_keys:
-                        skipped += 1
-                        if skipped % 50 == 0:
-                            print(f"[SKIP] {skipped} items skipped so far... (last: {key})")
+    
+    # 处理每个输入文件
+    # Process each input file
+    for data_path in input_paths:
+        if not data_path.exists():
+            print(f"[WARNING] Input file not found: {data_path}, skipping...")
+            continue
+        
+        dataset_name = data_path.stem  # sev 或 test_set
+        
+        # 构建输出路径
+        # Build output path: outputs/{model_folder}/01_emotion_elicited_generation_prompt_based/generated/{dataset_name}_generated.jsonl
+        out_dir = Path("outputs") / model_folder / "01_emotion_elicited_generation_prompt_based" / "generated"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        
+        jsonl_path = out_dir / f"{dataset_name}_generated.jsonl"
+        
+        # 加载已存在的 keys（用于断点续跑）
+        # Load existing keys (for resuming from checkpoint)
+        existing_keys = set()
+        if args.skip_if_exists and not args.no_skip and jsonl_path.exists():
+            with open(jsonl_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    try:
+                        obj = json.loads(line.strip())
+                        if "key" in obj:
+                            existing_keys.add(obj["key"])
+                    except:
                         continue
 
-                    # 构造 messages 并生成
-                    # Build messages and generate
-                    msgs = build_messages_for_emotion(emo, scenario, event)
-                    prompt = tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
-                    inputs = tok(prompt, return_tensors="pt").to(model.device)
+        print(f"{'='*70}")
+        print(f"Processing dataset: {dataset_name}")
+        print(f"Input: {data_path}")
+        print(f"Output: {jsonl_path}")
+        print(f"{'='*70}\n")
 
-                    # 贪婪生成
-                    # Greedy generation
-                    with torch.no_grad():
-                        gen_ids = model.generate(
-                            **inputs,
-                            max_new_tokens=args.max_new_tokens,
-                            do_sample=False,
-                            top_p=None,
-                            top_k=None,
-                            temperature=None,
-                            eos_token_id=tok.eos_token_id,
-                            pad_token_id=tok.pad_token_id,
-                            use_cache=True,
-                        )
-                    out_ids = gen_ids[0][inputs.input_ids.shape[1]:]
-                    gen_text = tok.decode(out_ids, skip_special_tokens=True).strip()
+        total = 0
+        skipped = 0
+        start = time.time()
 
-                    # 保存到 jsonl
-                    # Save to jsonl
-                    row = {
-                        "key": key,
-                        "skeleton_id": sid,
-                        "theme": theme,
-                        "valence": val,
-                        "emotion": emo,
-                        "scenario": scenario,
-                        "event": event,
-                        "gen_text": gen_text,
-                        "meta": {
-                            "model_id": args.model,
-                            "dtype": args.dtype,
-                            "device": args.device,
-                            "attn_impl": args.attn_impl,
-                            "max_new_tokens": args.max_new_tokens,
-                            "seed": args.seed,
-                            "input_len": int(inputs.input_ids.shape[1]),
-                            "time": int(time.time()),
+        with open(jsonl_path, "a", encoding="utf-8") as fout:
+            for item in iter_user_inputs(data_path):
+                theme    = item.get("theme", "")
+                scenario = item["scenario"]
+                events   = item["event"]          # dict: positive/neutral/negative 事件字典
+                sid      = item.get("skeleton_id", "unknown")
+
+                for val in valences:
+                    if val not in events: continue
+                    event = events[val]
+
+                    for emo in emotions:
+                        key = f"{sid}__{val}__{emo}".replace("/", "_")
+
+                        # 断点续跑检查
+                        # Checkpoint resuming check
+                        if key in existing_keys:
+                            skipped += 1
+                            if skipped % 50 == 0:
+                                print(f"[SKIP] {skipped} items skipped so far... (last: {key})")
+                            continue
+
+                        # 构造 messages 并生成
+                        # Build messages and generate
+                        msgs = build_messages_for_emotion(emo, scenario, event)
+                        prompt = tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
+                        inputs = tok(prompt, return_tensors="pt").to(model.device)
+
+                        # 贪婪生成
+                        # Greedy generation
+                        with torch.no_grad():
+                            gen_ids = model.generate(
+                                **inputs,
+                                max_new_tokens=args.max_new_tokens,
+                                do_sample=False,
+                                top_p=None,
+                                top_k=None,
+                                temperature=None,
+                                eos_token_id=tok.eos_token_id,
+                                pad_token_id=tok.pad_token_id,
+                                use_cache=True,
+                            )
+                        out_ids = gen_ids[0][inputs.input_ids.shape[1]:]
+                        gen_text = tok.decode(out_ids, skip_special_tokens=True).strip()
+
+                        # 保存到 jsonl
+                        # Save to jsonl
+                        row = {
+                            "key": key,
+                            "skeleton_id": sid,
+                            "theme": theme,
+                            "valence": val,
+                            "emotion": emo,
+                            "scenario": scenario,
+                            "event": event,
+                            "gen_text": gen_text,
+                            "meta": {
+                                "model_id": args.model,
+                                "dtype": args.dtype,
+                                "device": args.device,
+                                "attn_impl": args.attn_impl,
+                                "max_new_tokens": args.max_new_tokens,
+                                "seed": args.seed,
+                                "input_len": int(inputs.input_ids.shape[1]),
+                                "time": int(time.time()),
+                            }
                         }
-                    }
-                    fout.write(json.dumps(row, ensure_ascii=False) + "\n")
-                    fout.flush()  # 立即写入磁盘 Flush to disk immediately
-                    
-                    total += 1
-                    if total % 20 == 0:
-                        el = time.time() - start
-                        rate = total / el if el > 0 else 0
-                        print(f"[progress] generated={total} | last={key} | {el:.1f}s elapsed | {rate:.2f} items/s")
+                        fout.write(json.dumps(row, ensure_ascii=False) + "\n")
+                        fout.flush()  # 立即写入磁盘 Flush to disk immediately
+                        
+                        total += 1
+                        if total % 20 == 0:
+                            el = time.time() - start
+                            rate = total / el if el > 0 else 0
+                            print(f"[progress] generated={total} | last={key} | {el:.1f}s elapsed | {rate:.2f} items/s")
 
-    elapsed = time.time() - start
-    print(f"\n[OK] Done. Generated {total} items, skipped {skipped} items.")
-    print(f"     Time: {elapsed:.1f}s | Rate: {total/elapsed:.2f} items/s")
-    print(f"     Output: {jsonl_path}")
+        elapsed = time.time() - start
+        print(f"\n[OK] {dataset_name} completed. Generated {total} items, skipped {skipped} items.")
+        print(f"     Time: {elapsed:.1f}s | Rate: {total/elapsed:.2f} items/s")
+        print(f"     Output: {jsonl_path}\n")
 
 
 if __name__ == "__main__":
