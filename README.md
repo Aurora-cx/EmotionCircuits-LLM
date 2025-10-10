@@ -36,6 +36,24 @@ EmotionCircuits-LLM/
 ## 工作流程
 ## Workflow
 
+### 快速开始（一键复现）
+### Quick Start (One-Click Reproduction)
+
+使用`--both`参数一次性处理sev和test_set两个数据集：
+
+Use `--both` flag to process both sev and test_set datasets at once:
+
+```bash
+# 1. 生成文本 Generate texts
+python scripts/01_emotion_elicited_generation_prompt_based/1_emotion_elicited_generation.py --both
+
+# 2. GPT打标 GPT labeling
+python scripts/01_emotion_elicited_generation_prompt_based/2_label_generated_with_gpt.py --both
+
+# 3. 生成统计 Generate statistics
+python scripts/01_emotion_elicited_generation_prompt_based/3_generate_accuracy_stats.py --both
+```
+
 ### 1. 情绪引导文本生成
 ### Emotion-Elicited Text Generation
 
@@ -43,6 +61,12 @@ EmotionCircuits-LLM/
 
 Generate texts using emotion-guided prompts.
 
+**批量处理 Batch Processing:**
+```bash
+python scripts/01_emotion_elicited_generation_prompt_based/1_emotion_elicited_generation.py --both
+```
+
+**单个数据集 Single Dataset:**
 ```bash
 python scripts/01_emotion_elicited_generation_prompt_based/1_emotion_elicited_generation.py \
   --input_path data/sev.jsonl \
@@ -57,6 +81,12 @@ python scripts/01_emotion_elicited_generation_prompt_based/1_emotion_elicited_ge
 
 Use GPT-4o-mini to label the generated texts for emotion match.
 
+**批量处理 Batch Processing:**
+```bash
+python scripts/01_emotion_elicited_generation_prompt_based/2_label_generated_with_gpt.py --both
+```
+
+**单个数据集 Single Dataset:**
 ```bash
 python scripts/01_emotion_elicited_generation_prompt_based/2_label_generated_with_gpt.py \
   --input_path outputs/llama32_3b/01_emotion_elicited_generation_prompt_based/generated/sev_generated.jsonl
@@ -69,9 +99,16 @@ python scripts/01_emotion_elicited_generation_prompt_based/2_label_generated_wit
 
 Generate accuracy statistics by emotion and valence.
 
+**批量处理 Batch Processing:**
+```bash
+python scripts/01_emotion_elicited_generation_prompt_based/3_generate_accuracy_stats.py --both
+```
+
+**单个数据集 Single Dataset:**
 ```bash
 python scripts/01_emotion_elicited_generation_prompt_based/3_generate_accuracy_stats.py \
-  --input_dir outputs/llama32_3b/01_emotion_elicited_generation_prompt_based/labeled
+  --input_dir outputs/llama32_3b/01_emotion_elicited_generation_prompt_based/labeled \
+  --dataset sev
 ```
 
 ### 4. 提取残差激活
