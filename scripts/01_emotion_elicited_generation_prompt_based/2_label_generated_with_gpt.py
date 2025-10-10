@@ -123,8 +123,12 @@ def ask_llm_label(client, model: str, emotion: str, text: str,
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_path", type=str, required=True,
+    parser.add_argument("--input_path", type=str, default=None,
                        help="输入数据路径 Input data path，如 outputs/llama32_3b/01_emotion_elicited_generation_prompt_based/generated/sev_generated.jsonl")
+    parser.add_argument("--both", action="store_true",
+                       help="处理sev和test_set两个数据集 Process both sev and test_set datasets")
+    parser.add_argument("--model_name", type=str, default="llama32_3b",
+                       help="模型文件夹名 Model folder name")
     parser.add_argument("--lbl_model", type=str, default="gpt-4o-mini",
                        help="打标模型 Label model")
     parser.add_argument("--skip_if_exists", action="store_true", default=True,
@@ -133,185 +137,203 @@ def main():
                        help="重新打标所有项目 Relabel all items")
     args = parser.parse_args()
 
-    # 解析输入路径，自动推断输出路径
-    # Parse input path and infer output path
-    # 输入格式: outputs/{model_name}/01_emotion_elicited_generation_prompt_based/generated/{dataset_name}_generated.jsonl
-    # 输出格式: outputs/{model_name}/01_emotion_elicited_generation_prompt_based/labeled/{dataset_name}/{accepted|rejected}.jsonl
-    input_path = Path(args.input_path)
-    
-    if not input_path.exists():
-        print(f"[ERROR] Input file not found: {input_path}")
-        return
-    
-    # 从输入路径提取 model_name 和 dataset_name
-    # Extract model_name and dataset_name from input path
-    parts = input_path.parts
-    if "outputs" in parts and "01_emotion_elicited_generation_prompt_based" in parts and "generated" in parts:
-        outputs_idx = parts.index("outputs")
-        model_name = parts[outputs_idx + 1]
-        # 从文件名提取dataset_name (例如: sev_generated.jsonl -> sev)
-        filename = input_path.stem  # 去掉.jsonl
-        if filename.endswith("_generated"):
-            dataset_name = filename[:-10]  # 去掉_generated后缀
-        else:
-            dataset_name = filename
+    # 确定输入文件列表
+    # Determine input file list
+    if args.both:
+        base_path = Path("outputs") / args.model_name / "01_emotion_elicited_generation_prompt_based" / "generated"
+        input_paths = [
+            base_path / "sev_generated.jsonl",
+            base_path / "test_set_generated.jsonl"
+        ]
+    elif args.input_path:
+        input_paths = [Path(args.input_path)]
     else:
-        print(f"[ERROR] Input path format incorrect. Expected: outputs/{{model_name}}/01_emotion_elicited_generation_prompt_based/generated/{{dataset_name}}_generated.jsonl")
+        parser.error("必须指定 --input_path 或 --both | Must specify --input_path or --both")
         return
     
-    # 构建输出路径
-    # Build output path
-    out_dir = Path("outputs") / model_name / "01_emotion_elicited_generation_prompt_based" / "labeled" / dataset_name
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    acc_path = out_dir / "accepted.jsonl"
-    rej_path = out_dir / "rejected.jsonl"
-
-    # 加载已打标的 keys（用于断点续跑）
-    # Load existing keys (for resuming from checkpoint)
-    existing_keys = set()
-    if args.skip_if_exists and not args.no_skip:
-        for path in [acc_path, rej_path]:
-            if path.exists():
-                with open(path, "r", encoding="utf-8") as f:
-                    for line in f:
-                        try:
-                            obj = json.loads(line.strip())
-                            if "key" in obj:
-                                existing_keys.add(obj["key"])
-                        except:
-                            continue
-
-    total = 0
-    skipped = 0
-    accepted = 0
-    rejected = 0
-    start = time.time()
-
-    # 统计字典：按情绪和极性分类
-    # Statistics dictionaries: by emotion and valence
-    stats_by_emotion = {}  # {emotion: {"total": N, "accepted": M}}
-    stats_by_valence = {}  # {valence: {"total": N, "accepted": M}}
-
-    with open(input_path, "r", encoding="utf-8") as fin:
-        for line in fin:
-            line = line.strip()
-            if not line: continue
-            
-            try:
-                item = json.loads(line)
-            except json.JSONDecodeError:
-                print(f"[WARN] Failed to parse line: {line[:100]}...")
-                continue
-
-            key = item.get("key", "unknown")
-            
-            # 断点续跑检查
-            # Checkpoint resuming check
-            if key in existing_keys:
-                skipped += 1
-                if skipped % 50 == 0:
-                    print(f"[SKIP] {skipped} items skipped so far... (last: {key})")
-                continue
-
-            emotion = item.get("emotion", "")
-            valence = item.get("valence", "")
-            gen_text = item.get("gen_text", "")
-
-            # GPT 打标
-            # GPT labeling
-            label = {"match": 0, "reason": "empty-text"}
-            if isinstance(gen_text, str) and gen_text:
-                label = ask_llm_label(client, args.lbl_model, emotion, gen_text)
-
-            # 添加打标结果和打标时间
-            # Add labeling result and timestamp
-            item["judge"] = label
-            item["label_time"] = int(time.time())
-
-            # 根据打标结果保存
-            # Save based on labeling result
-            match_score = int(label.get("match", 0))
-            if match_score == 1:
-                output_path = acc_path
-                accepted += 1
-                category = "accepted"
+    # 处理每个输入文件
+    # Process each input file
+    for input_path in input_paths:
+        if not input_path.exists():
+            print(f"[WARNING] Input file not found: {input_path}, skipping...")
+            continue
+        
+        # 从输入路径提取 model_name 和 dataset_name
+        # Extract model_name and dataset_name from input path
+        parts = input_path.parts
+        if "outputs" in parts and "01_emotion_elicited_generation_prompt_based" in parts and "generated" in parts:
+            outputs_idx = parts.index("outputs")
+            model_name = parts[outputs_idx + 1]
+            # 从文件名提取dataset_name (例如: sev_generated.jsonl -> sev)
+            filename = input_path.stem  # 去掉.jsonl
+            if filename.endswith("_generated"):
+                dataset_name = filename[:-10]  # 去掉_generated后缀
             else:
-                output_path = rej_path
-                rejected += 1
-                category = "rejected"
+                dataset_name = filename
+        else:
+            print(f"[ERROR] Input path format incorrect: {input_path}")
+            print(f"        Expected: outputs/{{model_name}}/01_emotion_elicited_generation_prompt_based/generated/{{dataset_name}}_generated.jsonl")
+            continue
+        
+        # 构建输出路径
+        # Build output path
+        out_dir = Path("outputs") / model_name / "01_emotion_elicited_generation_prompt_based" / "labeled" / dataset_name
+        out_dir.mkdir(parents=True, exist_ok=True)
 
-            with open(output_path, "a", encoding="utf-8") as fout:
-                fout.write(json.dumps(item, ensure_ascii=False) + "\n")
+        acc_path = out_dir / "accepted.jsonl"
+        rej_path = out_dir / "rejected.jsonl"
 
-            # 更新统计
-            # Update statistics
-            if emotion:
-                if emotion not in stats_by_emotion:
-                    stats_by_emotion[emotion] = {"total": 0, "accepted": 0}
-                stats_by_emotion[emotion]["total"] += 1
-                stats_by_emotion[emotion]["accepted"] += match_score
+        # 加载已打标的 keys（用于断点续跑）
+        # Load existing keys (for resuming from checkpoint)
+        existing_keys = set()
+        if args.skip_if_exists and not args.no_skip:
+            for path in [acc_path, rej_path]:
+                if path.exists():
+                    with open(path, "r", encoding="utf-8") as f:
+                        for line in f:
+                            try:
+                                obj = json.loads(line.strip())
+                                if "key" in obj:
+                                    existing_keys.add(obj["key"])
+                            except:
+                                continue
 
-            if valence:
-                if valence not in stats_by_valence:
-                    stats_by_valence[valence] = {"total": 0, "accepted": 0}
-                stats_by_valence[valence]["total"] += 1
-                stats_by_valence[valence]["accepted"] += match_score
+        print(f"{'='*70}")
+        print(f"Processing dataset: {dataset_name}")
+        print(f"Input: {input_path}")
+        print(f"Output: {out_dir}")
+        print(f"{'='*70}\n")
 
-            total += 1
-            if total % 10 == 0:
-                el = time.time() - start
-                rate = total / el if el > 0 else 0
-                print(f"[progress] labeled={total} (acc={accepted}, rej={rejected}) | last={key} [{category}] | {el:.1f}s | {rate:.2f} items/s")
+        total = 0
+        skipped = 0
+        accepted = 0
+        rejected = 0
+        start = time.time()
 
-    elapsed = time.time() - start
-    print(f"\n[OK] Done. Labeled {total} items, skipped {skipped} items.")
-    print(f"     Accepted: {accepted} | Rejected: {rejected}")
-    print(f"     Time: {elapsed:.1f}s | Rate: {total/elapsed:.2f} items/s")
-    print(f"     Output:")
-    print(f"       - {acc_path}")
-    print(f"       - {rej_path}")
+        # 统计字典：按情绪和极性分类
+        # Statistics dictionaries: by emotion and valence
+        stats_by_emotion = {}  # {emotion: {"total": N, "accepted": M}}
+        stats_by_valence = {}  # {valence: {"total": N, "accepted": M}}
 
-    # ===== 输出统计信息 =====
-    # ===== Output statistics =====
-    print("\n" + "="*60)
-    print("📊 ACCURACY STATISTICS")
-    print("="*60)
+        with open(input_path, "r", encoding="utf-8") as fin:
+            for line in fin:
+                line = line.strip()
+                if not line: continue
+                
+                try:
+                    item = json.loads(line)
+                except json.JSONDecodeError:
+                    print(f"[WARN] Failed to parse line: {line[:100]}...")
+                    continue
 
-    # 总体正确率
-    # Overall accuracy
-    overall_acc = (accepted / total * 100) if total > 0 else 0
-    print(f"\n🎯 Overall Accuracy: {accepted}/{total} = {overall_acc:.2f}%")
+                key = item.get("key", "unknown")
+                
+                # 断点续跑检查
+                # Checkpoint resuming check
+                if key in existing_keys:
+                    skipped += 1
+                    if skipped % 50 == 0:
+                        print(f"[SKIP] {skipped} items skipped so far... (last: {key})")
+                    continue
 
-    # 按情绪统计
-    # Statistics by emotion
-    print(f"\n📈 Accuracy by Emotion:")
-    print("-" * 60)
-    print(f"{'Emotion':<15} {'Accepted':<12} {'Total':<10} {'Accuracy':<12}")
-    print("-" * 60)
-    
-    emotions_sorted = sorted(stats_by_emotion.items())
-    for emotion, stats in emotions_sorted:
-        acc_count = stats["accepted"]
-        tot_count = stats["total"]
-        acc_rate = (acc_count / tot_count * 100) if tot_count > 0 else 0
-        print(f"{emotion:<15} {acc_count:<12} {tot_count:<10} {acc_rate:>6.2f}%")
-    
-    # 按极性统计
-    # Statistics by valence
-    print(f"\n📉 Accuracy by Valence:")
-    print("-" * 60)
-    print(f"{'Valence':<15} {'Accepted':<12} {'Total':<10} {'Accuracy':<12}")
-    print("-" * 60)
-    
-    valences_sorted = sorted(stats_by_valence.items())
-    for valence, stats in valences_sorted:
-        acc_count = stats["accepted"]
-        tot_count = stats["total"]
-        acc_rate = (acc_count / tot_count * 100) if tot_count > 0 else 0
-        print(f"{valence:<15} {acc_count:<12} {tot_count:<10} {acc_rate:>6.2f}%")
-    
-    print("="*60)
+                emotion = item.get("emotion", "")
+                valence = item.get("valence", "")
+                gen_text = item.get("gen_text", "")
+
+                # GPT 打标
+                # GPT labeling
+                label = {"match": 0, "reason": "empty-text"}
+                if isinstance(gen_text, str) and gen_text:
+                    label = ask_llm_label(client, args.lbl_model, emotion, gen_text)
+
+                # 添加打标结果和打标时间
+                # Add labeling result and timestamp
+                item["judge"] = label
+                item["label_time"] = int(time.time())
+
+                # 根据打标结果保存
+                # Save based on labeling result
+                match_score = int(label.get("match", 0))
+                if match_score == 1:
+                    output_path = acc_path
+                    accepted += 1
+                    category = "accepted"
+                else:
+                    output_path = rej_path
+                    rejected += 1
+                    category = "rejected"
+
+                with open(output_path, "a", encoding="utf-8") as fout:
+                    fout.write(json.dumps(item, ensure_ascii=False) + "\n")
+
+                # 更新统计
+                # Update statistics
+                if emotion:
+                    if emotion not in stats_by_emotion:
+                        stats_by_emotion[emotion] = {"total": 0, "accepted": 0}
+                    stats_by_emotion[emotion]["total"] += 1
+                    stats_by_emotion[emotion]["accepted"] += match_score
+
+                if valence:
+                    if valence not in stats_by_valence:
+                        stats_by_valence[valence] = {"total": 0, "accepted": 0}
+                    stats_by_valence[valence]["total"] += 1
+                    stats_by_valence[valence]["accepted"] += match_score
+
+                total += 1
+                if total % 10 == 0:
+                    el = time.time() - start
+                    rate = total / el if el > 0 else 0
+                    print(f"[progress] labeled={total} (acc={accepted}, rej={rejected}) | last={key} [{category}] | {el:.1f}s | {rate:.2f} items/s")
+
+        elapsed = time.time() - start
+        print(f"\n[OK] {dataset_name} completed. Labeled {total} items, skipped {skipped} items.")
+        print(f"     Accepted: {accepted} | Rejected: {rejected}")
+        print(f"     Time: {elapsed:.1f}s | Rate: {total/elapsed:.2f} items/s")
+        print(f"     Output:")
+        print(f"       - {acc_path}")
+        print(f"       - {rej_path}")
+
+        # ===== 输出统计信息 =====
+        # ===== Output statistics =====
+        print("\n" + "="*60)
+        print(f"📊 ACCURACY STATISTICS - {dataset_name.upper()}")
+        print("="*60)
+
+        # 总体正确率
+        # Overall accuracy
+        overall_acc = (accepted / total * 100) if total > 0 else 0
+        print(f"\n🎯 Overall Accuracy: {accepted}/{total} = {overall_acc:.2f}%")
+
+        # 按情绪统计
+        # Statistics by emotion
+        print(f"\n📈 Accuracy by Emotion:")
+        print("-" * 60)
+        print(f"{'Emotion':<15} {'Accepted':<12} {'Total':<10} {'Accuracy':<12}")
+        print("-" * 60)
+        
+        emotions_sorted = sorted(stats_by_emotion.items())
+        for emotion, stats in emotions_sorted:
+            acc_count = stats["accepted"]
+            tot_count = stats["total"]
+            acc_rate = (acc_count / tot_count * 100) if tot_count > 0 else 0
+            print(f"{emotion:<15} {acc_count:<12} {tot_count:<10} {acc_rate:>6.2f}%")
+        
+        # 按极性统计
+        # Statistics by valence
+        print(f"\n📉 Accuracy by Valence:")
+        print("-" * 60)
+        print(f"{'Valence':<15} {'Accepted':<12} {'Total':<10} {'Accuracy':<12}")
+        print("-" * 60)
+        
+        valences_sorted = sorted(stats_by_valence.items())
+        for valence, stats in valences_sorted:
+            acc_count = stats["accepted"]
+            tot_count = stats["total"]
+            acc_rate = (acc_count / tot_count * 100) if tot_count > 0 else 0
+            print(f"{valence:<15} {acc_count:<12} {tot_count:<10} {acc_rate:>6.2f}%")
+        
+        print("="*60 + "\n")
 
 
 if __name__ == "__main__":
