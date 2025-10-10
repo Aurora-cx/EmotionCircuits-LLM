@@ -131,13 +131,25 @@ def generate_accuracy_stats(labeled_dir: Path, dataset_name: str):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_dir", type=str, required=True,
+    parser.add_argument("--input_dir", type=str, default=None,
                        help="labeled目录路径 Labeled directory path，如 outputs/llama32_3b/01_emotion_elicited_generation_prompt_based/labeled")
+    parser.add_argument("--both", action="store_true",
+                       help="处理sev和test_set两个数据集 Process both sev and test_set datasets")
+    parser.add_argument("--model_name", type=str, default="llama32_3b",
+                       help="模型文件夹名 Model folder name")
     parser.add_argument("--dataset", type=str, default=None,
                        help="数据集名称 Dataset name (如 sev, test_set)，不指定则处理所有数据集")
     args = parser.parse_args()
     
-    labeled_dir = Path(args.input_path if hasattr(args, 'input_path') else args.input_dir)
+    # 确定labeled目录路径
+    # Determine labeled directory path
+    if args.both or (not args.input_dir and not args.dataset):
+        labeled_dir = Path("outputs") / args.model_name / "01_emotion_elicited_generation_prompt_based" / "labeled"
+    elif args.input_dir:
+        labeled_dir = Path(args.input_dir)
+    else:
+        parser.error("必须指定 --input_dir 或 --both | Must specify --input_dir or --both")
+        return
     
     if not labeled_dir.exists():
         print(f"[ERROR] Labeled directory not found: {labeled_dir}")
@@ -145,7 +157,9 @@ def main():
     
     # 确定要处理的数据集
     # Determine datasets to process
-    if args.dataset:
+    if args.both:
+        datasets = ["sev", "test_set"]
+    elif args.dataset:
         datasets = [args.dataset]
     else:
         # 自动发现所有数据集文件夹
