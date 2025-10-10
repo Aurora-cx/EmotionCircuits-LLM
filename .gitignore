@@ -37,10 +37,7 @@ env/
 Thumbs.db
 
 # Project specific
-outputs/
-*.jsonl
-*.pt
-*.npz
+# (all data and outputs are now tracked)
 
 # Jupyter Notebook
 .ipynb_checkpoints
