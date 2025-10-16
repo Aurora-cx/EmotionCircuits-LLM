@@ -1,0 +1,57 @@
+Emotion Direction Similarity Analysis Summary
+======================================================================
+
+ANGER:
+  Diagonal mean: 1.000000
+  Off-diagonal mean: 0.238463
+  Off-diagonal std: 0.275289
+  Off-diagonal min: -0.030039
+  Off-diagonal max: 0.998736
+  Within-layer (Attn→MLP) mean: 0.767493 ± 0.140130
+  Between-layer (MLP→Attn) mean: 0.810506 ± 0.200463
+
+SADNESS:
+  Diagonal mean: 1.000000
+  Off-diagonal mean: 0.244169
+  Off-diagonal std: 0.273447
+  Off-diagonal min: -0.055317
+  Off-diagonal max: 0.997412
+  Within-layer (Attn→MLP) mean: 0.770856 ± 0.139945
+  Between-layer (MLP→Attn) mean: 0.800705 ± 0.207442
+
+HAPPINESS:
+  Diagonal mean: 1.000000
+  Off-diagonal mean: 0.245539
+  Off-diagonal std: 0.273933
+  Off-diagonal min: -0.042303
+  Off-diagonal max: 0.998709
+  Within-layer (Attn→MLP) mean: 0.767461 ± 0.143838
+  Between-layer (MLP→Attn) mean: 0.816658 ± 0.197715
+
+FEAR:
+  Diagonal mean: 1.000000
+  Off-diagonal mean: 0.238194
+  Off-diagonal std: 0.278569
+  Off-diagonal min: -0.032915
+  Off-diagonal max: 0.997626
+  Within-layer (Attn→MLP) mean: 0.776153 ± 0.138996
+  Between-layer (MLP→Attn) mean: 0.796064 ± 0.208314
+
+SURPRISE:
+  Diagonal mean: 1.000000
+  Off-diagonal mean: 0.229196
+  Off-diagonal std: 0.272360
+  Off-diagonal min: -0.034455
+  Off-diagonal max: 0.997490
+  Within-layer (Attn→MLP) mean: 0.763473 ± 0.140225
+  Between-layer (MLP→Attn) mean: 0.810339 ± 0.184958
+
+DISGUST:
+  Diagonal mean: 1.000000
+  Off-diagonal mean: 0.229325
+  Off-diagonal std: 0.268012
+  Off-diagonal min: -0.043083
+  Off-diagonal max: 0.998506
+  Within-layer (Attn→MLP) mean: 0.760418 ± 0.135426
+  Between-layer (MLP→Attn) mean: 0.806309 ± 0.196722
+

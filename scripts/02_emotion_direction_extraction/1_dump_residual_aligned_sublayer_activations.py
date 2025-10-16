@@ -7,8 +7,8 @@ Dump Residual-Aligned Sublayer Activations
 使用01文件夹里accepted的样本进行前向计算，保存attention和MLP层的输出加回残差流之后的值
 用于计算情绪向量，按组保存所有6个情绪的数据
 
-- 输入 Input: outputs/{model_name}/02_labeled/{dataset_name}/accepted.jsonl
-- 输出 Output: outputs/{model_name}/03_residual_activations/{dataset_name}/attention/ 和 mlp/
+- 输入 Input: outputs/{model_name}/01_emotion_elicited_generation_prompt_based/labeled/sev/accepted.jsonl
+- 输出 Output: outputs/{model_name}/02_emotion_directions/residual_dump/attention/ 和 mlp/
 """
 
 import os, json, time, traceback, argparse
@@ -19,9 +19,15 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from huggingface_hub import login
 from collections import defaultdict
 
-# HF token
-HF_TOKEN = 'Your HuggingFace Token'
-login(token=HF_TOKEN)
+# HF token (优先使用环境变量，如果没有则尝试默认登录)
+# HF token (prioritize env var, otherwise use default login)
+HF_TOKEN = os.environ.get('HF_TOKEN', None)
+if HF_TOKEN:
+    login(token=HF_TOKEN)
+else:
+    # 如果已经通过 huggingface-cli login 登录过，这里会自动使用已保存的 token
+    # If already logged in via huggingface-cli login, this will use saved token
+    pass
 
 # 情绪向量计算相关
 EMOS6 = ["anger","sadness","happiness","fear","surprise","disgust"]
@@ -210,42 +216,33 @@ def save_group_outputs(group_data, attention_outputs, mlp_outputs, last_idx, att
 # ============== 主流程 ==============
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_path", type=str, required=True,
-                       help="输入数据路径 Input path，如 outputs/llama32_3b/02_labeled/sev/accepted.jsonl")
+    parser.add_argument("--model_name", type=str, default="llama32_3b",
+                       help="模型文件夹名称 Model folder name")
     parser.add_argument("--model", type=str, default="meta-llama/Llama-3.2-3B-Instruct",
-                       help="模型名称 Model name")
+                       help="HuggingFace模型名称 HuggingFace model name")
     parser.add_argument("--device", type=str, default="cuda:0",
                        help="设备 Device")
     parser.add_argument("--dtype", type=str, default="float32", choices=["float32","bfloat16","float16"],
                        help="数据类型 Data type")
     args = parser.parse_args()
     
-    # 解析输入路径，自动推断输出路径
-    # Parse input path and infer output path
-    # 输入格式: outputs/{model_name}/02_labeled/{dataset_name}/accepted.jsonl
-    # 输出格式: outputs/{model_name}/03_residual_activations/{dataset_name}/attention/ 和 mlp/
-    input_path = Path(args.input_path)
+    # 固定使用 sev 数据集
+    # Fixed to use sev dataset
+    model_name = args.model_name
+    dataset_name = "sev"
+    
+    # 构建输入路径
+    # Build input path
+    input_path = Path("outputs") / model_name / "01_emotion_elicited_generation_prompt_based" / "labeled" / dataset_name / "accepted.jsonl"
     
     if not input_path.exists():
         print(f"[ERROR] Input file not found: {input_path}")
         return
     
-    # 从输入路径提取 model_name 和 dataset_name
-    # Extract model_name and dataset_name from input path
-    parts = input_path.parts
-    if "outputs" in parts and "02_labeled" in parts:
-        outputs_idx = parts.index("outputs")
-        labeled_idx = parts.index("02_labeled")
-        model_name = parts[outputs_idx + 1]
-        dataset_name = parts[labeled_idx + 1]
-    else:
-        print(f"[ERROR] Input path format incorrect. Expected: outputs/{{model_name}}/02_labeled/{{dataset_name}}/accepted.jsonl")
-        return
-    
     # 构建输出路径
     # Build output paths
-    attention_save_dir = Path("outputs") / model_name / "03_residual_activations" / dataset_name / "attention"
-    mlp_save_dir = Path("outputs") / model_name / "03_residual_activations" / dataset_name / "mlp"
+    attention_save_dir = Path("outputs") / model_name / "02_emotion_directions" / "residual_dump" / "attention"
+    mlp_save_dir = Path("outputs") / model_name / "02_emotion_directions" / "residual_dump" / "mlp"
     attention_save_dir.mkdir(parents=True, exist_ok=True)
     mlp_save_dir.mkdir(parents=True, exist_ok=True)
     
@@ -257,7 +254,7 @@ def main():
     # 加载模型与分词器
     # Load model and tokenizer
     print("Loading model and tokenizer...")
-    tok = AutoTokenizer.from_pretrained(args.model, use_fast=True, token=HF_TOKEN)
+    tok = AutoTokenizer.from_pretrained(args.model, use_fast=True, token=HF_TOKEN if HF_TOKEN else True)
     if tok.pad_token_id is None:
         tok.pad_token = tok.eos_token
     
@@ -265,7 +262,7 @@ def main():
         args.model,
         torch_dtype=torch_dtype,
         device_map=args.device,
-        token=HF_TOKEN
+        token=HF_TOKEN if HF_TOKEN else True
     )
     model.eval()
     

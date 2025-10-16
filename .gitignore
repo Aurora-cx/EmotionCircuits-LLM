@@ -37,7 +37,13 @@ env/
 Thumbs.db
 
 # Project specific
-# (all data and outputs are now tracked)
+# Exclude .pt and .npz files
+*.pt
+*.npz
+
+# But keep the emotion direction files
+!outputs/*/02_emotion_directions/emo_directions_attention.pt
+!outputs/*/02_emotion_directions/emo_directions_mlp.pt
 
 # Jupyter Notebook
 .ipynb_checkpoints
