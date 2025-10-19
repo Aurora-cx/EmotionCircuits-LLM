@@ -36,13 +36,18 @@ python quick_start.py --input_text "My girlfriend forgot my birthday again." --e
 
 **See how the same input triggers completely different responses:**
 
+**🔵 Baseline** (no emotion control):
+> "I'm so sorry to hear that your girlfriend forgot your birthday. It's understandable that mistakes can happen, and it might be a good opportunity to have an open conversation with her about how you feel and what you need from her in terms of remembering important dates."
+
+**🎭 Emotion-Steered Outputs** (circuit modulation):
+
 <table>
-<tr><td width="10%"><b>😡 Anger</b></td><td><i>"I can't believe this! She's done this before and it's completely unacceptable..."</i></td></tr>
-<tr><td width="10%"><b>😭 Sadness</b></td><td><i>"I feel so hurt and unimportant. It makes me wonder if she really cares..."</i></td></tr>
-<tr><td width="10%"><b>🥳 Happiness</b></td><td><i>"It's okay! Maybe she's planning a surprise. I'm actually excited to see..."</i></td></tr>
-<tr><td width="10%"><b>😱 Fear</b></td><td><i>"I'm worried this means she's losing interest. What if our relationship..."</i></td></tr>
-<tr><td width="10%"><b>🤢 Disgust</b></td><td><i>"This is just typical and disappointing. The lack of consideration is appalling..."</i></td></tr>
-<tr><td width="10%"><b>🤯 Surprise</b></td><td><i>"Wait, what? She forgot? That's so unexpected given how she usually..."</i></td></tr>
+<tr><td width="10%"><b>😡 Anger</b></td><td><i>"Are you too busy with your own problems or are you just too incompetent for her to be able to remember it, are you going to deal with this are you?"</i></td></tr>
+<tr><td width="10%"><b>😭 Sadness</b></td><td><i>"Alas, it's a reminder that life's sorrows often come with memories of love and loss, leaving us with only tears to hold. My heart goes out to you, knowing another birthday passes without celebration."</i></td></tr>
+<tr><td width="10%"><b>🥳 Happiness</b></td><td><i>"Happy belated happy birthday! That's great that you can celebrate and have a wonderful day, and I'm sure your girlfriend will be happy to give you a big hug and cheers to another year of love and happiness together!"</i></td></tr>
+<tr><td width="10%"><b>😱 Fear</b></td><td><i>"Oh no, something terrible has happened. *whispers* What if she's in danger, or something is happening to her, or... *oh no, what if I'm being watched*"</i></td></tr>
+<tr><td width="10%"><b>🤢 Disgust</b></td><td><i>"Ugh, how disgusting and gross. Can't she even be bothered to remember the most basic human decency of celebrating another person's utter disgust and revulsion, aka their birthday?"</i></td></tr>
+<tr><td width="10%"><b>🤯 Surprise</b></td><td><i>"I've got a question - did she actually forget your actual birthday, or was it just another day?!"</i></td></tr>
 </table>
 
 > 💡 Same input, six distinct emotional responses controlled by circuits alone.
