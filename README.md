@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://arxiv.org/abs/2510.11328"><img src="https://img.shields.io/badge/arXiv-2510.11328-b31b1b.svg" /></a>
-  <a href="https://github.com/Aurora-cx/EmotionCircuits-LLM"><img src="https://img.shields.io/badge/Code-EmotionCircuits--LLM-FF69B4?logo=github" /></a>
+  <a href="https://github.com/Aurora-cx/EmotionCircuits-LLM"><img src="https://img.shields.io/badge/Code-EmotionCircuits--LLM-FFC0CB?logo=github" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPL--3.0-yellow.svg" /></a>
   <img src="https://img.shields.io/badge/Python-3.9%2B-blue" />
 </p>
