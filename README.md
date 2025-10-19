@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://arxiv.org/abs/2510.11328"><img src="https://img.shields.io/badge/arXiv-2510.11328-b31b1b.svg" /></a>
-  <a href="https://github.com/Aurora-cx/EmotionCircuits-LLM"><img src="https://img.shields.io/badge/Code-EmotionCircuits--LLM-FFC0CB?logo=github" /></a>
+  <a href="https://github.com/Aurora-cx/EmotionCircuits-LLM"><img src="https://img.shields.io/badge/Code-EmotionCircuits--LLM-F06292?logo=github" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPL--3.0-yellow.svg" /></a>
   <img src="https://img.shields.io/badge/Python-3.9%2B-blue" />
 </p>
@@ -37,15 +37,15 @@ python quick_start.py --input_text "My girlfriend forgot my birthday again." --e
 **See how the same input triggers completely different responses:**
 
 <table>
-<tr><td width="15%"><b>😠 Anger</b></td><td><i>"I can't believe this! She's done this before and it's completely unacceptable..."</i></td></tr>
-<tr><td width="15%"><b>😢 Sadness</b></td><td><i>"I feel so hurt and unimportant. It makes me wonder if she really cares..."</i></td></tr>
-<tr><td width="15%"><b>😊 Happiness</b></td><td><i>"It's okay! Maybe she's planning a surprise. I'm actually excited to see..."</i></td></tr>
-<tr><td width="15%"><b>😨 Fear</b></td><td><i>"I'm worried this means she's losing interest. What if our relationship..."</i></td></tr>
-<tr><td width="15%"><b>🤢 Disgust</b></td><td><i>"This is just typical and disappointing. The lack of consideration is appalling..."</i></td></tr>
-<tr><td width="15%"><b>😲 Surprise</b></td><td><i>"Wait, what? She forgot? That's so unexpected given how she usually..."</i></td></tr>
+<tr><td width="10%"><b>😡 Anger</b></td><td><i>"I can't believe this! She's done this before and it's completely unacceptable..."</i></td></tr>
+<tr><td width="10%"><b>😭 Sadness</b></td><td><i>"I feel so hurt and unimportant. It makes me wonder if she really cares..."</i></td></tr>
+<tr><td width="10%"><b>🥳 Happiness</b></td><td><i>"It's okay! Maybe she's planning a surprise. I'm actually excited to see..."</i></td></tr>
+<tr><td width="10%"><b>😱 Fear</b></td><td><i>"I'm worried this means she's losing interest. What if our relationship..."</i></td></tr>
+<tr><td width="10%"><b>🤢 Disgust</b></td><td><i>"This is just typical and disappointing. The lack of consideration is appalling..."</i></td></tr>
+<tr><td width="10%"><b>🤯 Surprise</b></td><td><i>"Wait, what? She forgot? That's so unexpected given how she usually..."</i></td></tr>
 </table>
 
-> 💡 **99.65% emotion accuracy** | Same input, six distinct emotional responses controlled by circuits alone.
+> 💡 Same input, six distinct emotional responses controlled by circuits alone.
 
 **📄 Paper**: [Do LLMs "Feel"? Emotion Circuits Discovery and Control](https://arxiv.org/abs/2510.11328)  
 **📧 Contact**: [chenxi.wang@mbzuai.ac.ae](mailto:chenxi.wang@mbzuai.ac.ae)
