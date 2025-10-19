@@ -1,14 +1,30 @@
-# EmotionCircuits-LLM
+# 🎭 EmotionCircuits-LLM
 
-大语言模型中的情绪回路研究项目  
-Emotion Circuits in Large Language Models Research Project
+<p align="center">
+  <img src="assets/main_figure.png" alt="Emotion Circuits Framework" width="100%">
+</p>
 
-## 项目简介
-## Project Overview
+<p align="center">
+  <a href="https://arxiv.org/abs/2510.11328"><img src="https://img.shields.io/badge/arXiv-2510.11328-b31b1b.svg" alt="arXiv"></a>
+  <a href="https://github.com/Aurora-cx/EmotionCircuits-LLM"><img src="https://img.shields.io/badge/GitHub-EmotionCircuits--LLM-blue.svg?logo=github" alt="GitHub"></a>
+  <a href="https://github.com/Aurora-cx/EmotionCircuits-LLM/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License"></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.9+-blue.svg?logo=python" alt="Python"></a>
+</p>
+
+<h3 align="center">
+大语言模型中的情绪回路发现与调控<br>
+Emotion Circuits Discovery and Control in Large Language Models
+</h3>
+
+---
+
+## 📖 项目简介 | Project Overview
 
 本项目研究大语言模型中的情绪表达机制，通过情绪引导的文本生成和神经回路分析来理解模型如何产生和控制情绪表达。
 
 This project investigates emotion expression mechanisms in large language models through emotion-guided text generation and neural circuit analysis.
+
+**📄 论文 | Paper**: [Do LLMs "Feel"? Emotion Circuits Discovery and Control](https://arxiv.org/abs/2510.11328) (arXiv 2510.11328)
 
 ## 目录结构
 ## Directory Structure
