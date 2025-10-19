@@ -11,9 +11,8 @@
 <p align="center">
   <a href="https://arxiv.org/abs/2510.11328"><img src="https://img.shields.io/badge/arXiv-2510.11328-b31b1b.svg" /></a>
   <a href="https://github.com/Aurora-cx/EmotionCircuits-LLM"><img src="https://img.shields.io/badge/Code-EmotionCircuits--LLM-2F80ED?logo=github" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPL--3.0-blue.svg" /></a>
   <img src="https://img.shields.io/badge/Python-3.9%2B-blue" />
-  <a href="#contributing"><img src="https://img.shields.io/badge/PRs-Welcome-brightgreen"></a>
 </p>
 
 <p align="center">
@@ -643,9 +642,9 @@ If this project helps your research, please cite our paper:
 
 ## 📄 许可证 | License
 
-本项目采用 MIT 许可证。详见 [LICENSE](LICENSE) 文件。
+本项目采用 GNU General Public License v3.0 许可证。详见 [LICENSE](LICENSE) 文件。
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU General Public License v3.0. See [LICENSE](LICENSE) file for details.
 
 ---
 
