@@ -4,20 +4,22 @@
 计算每个"子层(Attention/MLP)×层"的单位重要性 I_{L,p}
 Compute unit importance I_{L,p} for each "sublayer(Attention/MLP)×layer"
 
-I_{L,p} = Δs / (α * σ_{L,p}),  Δs = <h_final' - h_final, v_ref^(emotion)>
-- σ_{L,p} 来自 06_emotion_circuit_integration/sigma_summary.json
-- σ_{L,p} from 06_emotion_circuit_integration/sigma_summary.json
-- v_ref^(emotion) 用稳定段 L21–25 的 attn+mlp 合并平均（单位化、符号对齐）
-- v_ref^(emotion) uses stable segment L21–25 attn+mlp merged average (normalized, sign-aligned)
-- 注入口径：子层"输出→残差"那一支，仅 last token
-- Injection scope: sublayer "output→residual" branch, last token only
-- 评估口径：默认 final(L27)；可同时输出 anchor(L21–25 平均) 的投影变化
-- Evaluation scope: default final(L27); optionally output anchor(L21–25 average) projection changes
-- 支持多个alpha值计算，避免alpha带来的偶然性
-- Support multiple alpha values computation to avoid alpha-induced randomness
+公式 Formula:
+  I_{L,p} = Δs / (α * σ_{L,p}),  Δs = <h_final' - h_final, v_ref^(emotion)>
 
-- 输入 Input: outputs/{model_name}/02_emotion_directions/emo_directions_*.pt
-- 输出 Output: outputs/{model_name}/06_emotion_circuit_integration/sublayer_importance/
+参数说明 Parameters:
+  - σ_{L,p}: 来自 sigma_summary.json / from sigma_summary.json
+  - v_ref^(emotion): 稳定段 L21–25 的 attn+mlp 合并平均（单位化、符号对齐）
+                     Stable segment L21–25 attn+mlp merged average (normalized, sign-aligned)
+
+实验设置 Experiment Setup:
+  - 注入口径 Injection scope: 子层"输出→残差"分支，仅 last token / sublayer output→residual, last token only
+  - 评估口径 Evaluation scope: 默认 final(L27)；可选 anchor(L21–25 平均) / default final(L27); optional anchor(L21–25 avg)
+  - 多 alpha 值计算，避免偶然性 / Multiple alpha values to avoid randomness
+
+输入输出 Input/Output:
+  - 输入 Input:  outputs/{model_name}/02_emotion_directions/emo_directions_*.pt
+  - 输出 Output: outputs/{model_name}/06_emotion_circuit_integration/sublayer_importance/
 """
 
 import os, json, argparse, random
@@ -28,9 +30,10 @@ import torch
 from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-# ============== 路径与基本配置 / Paths and Basic Configuration ==============
-# 工作目录：项目根目录
-# Working directory: project root
+# ============== 路径与基本配置 ==============
+# ============== Paths and Basic Configuration ==============
+# 项目根目录：自动获取脚本所在位置的上两级目录
+# Project root: automatically get the directory two levels up from the script location
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 os.chdir(PROJECT_ROOT)
 
@@ -40,7 +43,8 @@ EMOTIONS = ["anger","sadness","happiness","fear","surprise","disgust"]
 N_LAYERS = 28
 H = 3072
 
-# ============== 工具函数 / Utility Functions ==============
+# ============== 工具函数 ==============
+# ============== Utility Functions ==============
 def seed_all(seed:int):
     """
     设置随机种子
@@ -88,7 +92,8 @@ def sign_align(v:torch.Tensor, ref:torch.Tensor):
     """
     return v if torch.dot(v, ref) >= 0 else -v
 
-# ============== 数据加载器 / Data Loaders ==============
+# ============== 数据加载器 ==============
+# ============== Data Loaders ==============
 def load_sigma(path_02):
     """
     加载sigma值
@@ -106,8 +111,7 @@ def _load_dirs_pt(pt_path):
     Compatible with emotion direction file format under 02_emotion_directions
     
     pt['dirs'][emotion] -> list of per-layer vectors (numpy or list), shape (H,) each
-    返回：dirs: {emo: [L -> np.ndarray(H,)]}
-    Returns: dirs: {emo: [L -> np.ndarray(H,)]}
+    返回 Returns：dirs: {emo: [L -> np.ndarray(H,)]}
     """
     obj = torch.load(pt_path, map_location="cpu")
     if "dirs" not in obj or "emotions" not in obj:
@@ -119,10 +123,11 @@ def _load_dirs_pt(pt_path):
             arr = np.asarray(v, dtype=np.float32)
             if arr.shape[0] != H:
                 raise ValueError(f"Dim mismatch in {pt_path}, emotion={e}, got {arr.shape}")
-            # 单位化（稳）
+            # 单位化（稳定）
             # Normalization (stable)
             n = np.linalg.norm(arr) + 1e-12
             seq.append((arr / n).astype(np.float32))
+        # 长度为 N_LAYERS
         # length N_LAYERS
         out[e] = seq
     return out, obj.get("layers", N_LAYERS)
@@ -139,8 +144,7 @@ def try_load_sublayer_dirs(dir_02):
     若缺失某个则跳过该子层
     Skip sublayer if missing
     
-    返回
-    Returns:
+    返回 Returns:
       dirs = { "attention": {emo: [L->np(H,)]}, "mlp": {emo: [L->np(H,)]} }
     """
     out = {}
@@ -198,7 +202,8 @@ def expand_accepted_samples(accepted_rows, emotions):
             ))
     return samples
 
-# ============== 参考基构建器 / Reference Builder ==============
+# ============== 参考基构建器 ==============
+# ============== Reference Builder ==============
 def build_global_reference(dirs_by_sublayer, emotions, stable_layers=(21,22,23,24,25)):
     """
     在稳定段 L∈{21..25}，把 attention+mlp 的单位向量合并平均，得到每个情绪的统一参考基 v_ref^(e)（单位化）
@@ -227,7 +232,8 @@ def build_global_reference(dirs_by_sublayer, emotions, stable_layers=(21,22,23,2
         vref[e] = l2_normalize(acc).cpu().numpy()
     return vref
 
-# ============== 注入钩子 / Injection Hooks ==============
+# ============== 注入钩子 ==============
+# ============== Injection Hooks ==============
 class SublayerInjector:
     """
     在指定层/子层对 last token 注入 Δh（与子层输出残差对齐的口径）
@@ -239,12 +245,14 @@ class SublayerInjector:
       - mlp      : Register on layer.mlp.forward output (B,T,H) add Δh to last token
     """
     def __init__(self, plan):
-        # list of dicts: {layer, kind, delta_vec: torch(H,)}
+        # 计划列表：list of dicts: {layer, kind, delta_vec: torch(H,)}
+        # Plan list: list of dicts: {layer, kind, delta_vec: torch(H,)}
         self.plan = plan
         self.handles = []
 
     def _hook_attn(self, delta_vec):
         def fn(module, inputs, output):
+            # 输出：tuple of (hidden_states, attention_weights, ...)
             # output: tuple of (hidden_states, attention_weights, ...)
             if isinstance(output, tuple):
                 # (B, T, H)
@@ -254,6 +262,7 @@ class SublayerInjector:
                 # Keep other outputs unchanged
                 return (hidden_states,) + output[1:]
             else:
+                # 输出：(B, T, H)
                 # output: (B, T, H)
                 output[:, -1, :] = output[:, -1, :] + delta_vec
                 return output
@@ -261,6 +270,7 @@ class SublayerInjector:
 
     def _hook_mlp(self, delta_vec):
         def fn(module, inputs, output):
+            # 输出：(B, T, H)
             # output: (B, T, H)
             output[:, -1, :] = output[:, -1, :] + delta_vec
             return output
@@ -282,7 +292,8 @@ class SublayerInjector:
         for h in self.handles: h.remove()
         self.handles.clear()
 
-# ============== 核心计算 / Core Computation ==============
+# ============== 核心计算 ==============
+# ============== Core Computation ==============
 def compute_importance_per_sublayer(
     model, tok, samples, emotion, dirs_by_sublayer, v_ref,
     sigma_map, alpha=0.5, anchor_mode="final", device="cpu",
@@ -292,17 +303,16 @@ def compute_importance_per_sublayer(
     返回 DataFrame: 每个 (layer, kind) 的单位重要性
     Returns DataFrame: unit importance for each (layer, kind)
     
-    columns: [emotion, kind, layer, alpha, sigma, dose, s_base_mean, ds_mean_final, I_final, ds_mean_anchor?, I_anchor?]
+    列 columns: [emotion, kind, layer, alpha, sigma, dose, s_base_mean, ds_mean_final, I_final, ds_mean_anchor?, I_anchor?]
     """
-    # 预先把本情绪的方向张量化
-    # Pre-tensorize emotion direction
-    # (H,)
+    # 预先把本情绪的方向张量化 (H,)
+    # Pre-tensorize emotion direction (H,)
     vref = torch.tensor(v_ref[emotion], dtype=torch.float32, device=device)
     
-    # 建立子层本地向量缓存（单位化+与 vref 符号对齐）
-    # Build sublayer local vector cache (normalized + sign-aligned with vref)
-    # {(kind, L): torch(H,)}
+    # 建立子层本地向量缓存（单位化+与 vref 符号对齐）{(kind, L): torch(H,)}
+    # Build sublayer local vector cache (normalized + sign-aligned with vref) {(kind, L): torch(H,)}
     local_dirs = {}
+    # 例如 ["attention","mlp"]
     # e.g. ["attention","mlp"]
     kinds = list(dirs_by_sublayer.keys())
     for kind in kinds:
@@ -321,8 +331,7 @@ def compute_importance_per_sublayer(
         inputs = tok(prompt, return_tensors="pt").to(device)
         with torch.no_grad():
             out = model(**inputs, use_cache=False, output_hidden_states=True)
-            # final
-            # (B, T, H)
+            # final (B, T, H)
             h_final = out.hidden_states[-1]
             s_f = torch.matmul(h_final[:, -1, :], vref).item()
             s_base_final.append(s_f)
@@ -331,6 +340,7 @@ def compute_importance_per_sublayer(
             if anchor_mode == "anchor+final":
                 acc = 0.0
                 for L in stable_layers:
+                    # HF: hidden_states[0]=embeds, 第 L 层 -> 索引 L+1
                     # HF: hidden_states[0]=embeds, layer L -> index L+1
                     hL = out.hidden_states[L+1]
                     acc += torch.matmul(hL[:, -1, :], vref).item()
@@ -347,7 +357,7 @@ def compute_importance_per_sublayer(
     current_layer = 0
     
     for kind in kinds:
-        print(f"\n=== Processing {kind} layers ===")
+        print(f"\n=== 处理 {kind} 层 Processing {kind} layers ===")
         for L in range(N_LAYERS):
             current_layer += 1
             key = f"{kind}_{L}"
@@ -428,7 +438,8 @@ def compute_importance_per_sublayer(
     df = pd.DataFrame(rows)
     return df
 
-# ============== 主函数 / Main Function ==============
+# ============== 主函数 ==============
+# ============== Main Function ==============
 def main():
     """
     主函数
@@ -436,15 +447,15 @@ def main():
     """
     ap = argparse.ArgumentParser()
     ap.add_argument("--model_name", default=MODEL_NAME, 
-                    help="模型名称 / Model name")
+                    help="模型名称 Model name")
     ap.add_argument("--emotions", default="anger,sadness,happiness,fear,disgust,surprise", 
-                    help="情绪列表 / Emotion list")
+                    help="情绪列表 Emotion list")
     ap.add_argument("--alphas", default="0.1,0.3,0.5,0.7", 
-                    help="多个alpha值，用逗号分隔 / Multiple alpha values, comma-separated")
+                    help="多个alpha值，用逗号分隔 Multiple alpha values, comma-separated")
     ap.add_argument("--anchor_mode", default="final", choices=["final","anchor+final"],
-                    help="是否同时输出稳定段(L21–25)均值投影的Δs与单位效应 / Whether to output stable segment(L21–25) mean projection Δs and unit effects")
+                    help="是否同时输出稳定段(L21–25)均值投影的Δs与单位效应 Whether to output stable segment(L21–25) mean projection Δs and unit effects")
     ap.add_argument("--seed", type=int, default=42, 
-                    help="随机种子 / Random seed")
+                    help="随机种子 Random seed")
     args = ap.parse_args()
 
     seed_all(args.seed)
@@ -452,10 +463,10 @@ def main():
     # 解析alpha值
     # Parse alpha values
     alpha_values = [float(x.strip()) for x in args.alphas.split(",") if x.strip()]
-    print(f"[+] Alpha values: {alpha_values}")
+    print(f"[+] Alpha 值 values: {alpha_values}")
 
-    # 路径
-    # Paths
+    # 路径配置
+    # Paths configuration
     base_dir = PROJECT_ROOT / "outputs" / args.model_name
     dir_02 = base_dir / "02_emotion_directions"
     dir_01 = base_dir / "01_emotion_elicited_generation_prompt_based"
@@ -466,9 +477,8 @@ def main():
     # Load σ
     sigma_map = load_sigma(str(dir_06))
 
-    # 加载子层情绪向量（attention / mlp）
-    # Load sublayer emotion vectors (attention / mlp)
-    # {"attention":{emo:[L->np(H,)]}, "mlp":{...}}
+    # 加载子层情绪向量（attention / mlp）{"attention":{emo:[L->np(H,)]}, "mlp":{...}}
+    # Load sublayer emotion vectors (attention / mlp) {"attention":{emo:[L->np(H,)]}, "mlp":{...}}
     dirs_by_sublayer = try_load_sublayer_dirs(str(dir_02))
 
     # 构建统一参考基（L21–25，attn+mlp 合并）
@@ -481,12 +491,12 @@ def main():
     accepted_file = dir_01 / "labeled" / "sev" / "accepted.jsonl"
     accepted_rows = load_accepted_samples(str(accepted_file))
     if not accepted_rows:
-        print("[-] No accepted samples found."); return
+        print("[-] 未找到 accepted 样本 No accepted samples found."); return
     samples = expand_accepted_samples(accepted_rows, emotions)
-    print(f"[+] Accepted samples loaded: {len(samples)}")
+    print(f"[+] 已加载 Accepted samples loaded: {len(samples)}")
 
-    # 模型
-    # Model
+    # 模型加载
+    # Model loading
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
     
     # HuggingFace token处理
@@ -495,14 +505,14 @@ def main():
     
     # 加载模型和tokenizer
     # Load model and tokenizer
-    print(f"[+] Loading model: {MODEL}")
+    print(f"[+] 正在加载模型 Loading model: {MODEL}")
     tok = AutoTokenizer.from_pretrained(MODEL, use_fast=True, token=HF_TOKEN if HF_TOKEN else True)
     if tok.pad_token is None: 
         tok.pad_token = tok.eos_token
     model = AutoModelForCausalLM.from_pretrained(
         MODEL, torch_dtype=torch.float32, device_map={"": device}, token=HF_TOKEN if HF_TOKEN else True
     )
-    print(f"[+] Model loaded on device: {device}")
+    print(f"[+] 模型已加载到设备 Model loaded on device: {device}")
     model.eval()
 
     # 按alpha值分别计算
@@ -511,14 +521,14 @@ def main():
     
     for alpha in alpha_values:
         print(f"\n{'='*60}")
-        print(f"Computing importance with alpha = {alpha}")
+        print(f"使用 alpha = {alpha} 计算重要性 Computing importance with alpha = {alpha}")
         print(f"{'='*60}")
         
         # 按情绪分别计算
         # Compute separately by emotions
         all_rows = []
         for emo in emotions:
-            print(f"\n=== Computing sublayer importance for emotion: {emo} (alpha={alpha}) ===")
+            print(f"\n=== 计算情绪子层重要性 Computing sublayer importance for emotion: {emo} (alpha={alpha}) ===")
             df = compute_importance_per_sublayer(
                 model, tok, [s for s in samples if s["emotion"]==emo],
                 emotion=emo,
@@ -532,7 +542,7 @@ def main():
             )
             out_csv = dir_out / f"importance_{emo}_alpha{alpha}.csv"
             df.to_csv(str(out_csv), index=False)
-            print(f"[✓] Saved: {out_csv}")
+            print(f"[✓] 已保存 Saved: {out_csv}")
             all_rows.append(df)
 
         # 合并一个总表
@@ -541,7 +551,7 @@ def main():
             all_df = pd.concat(all_rows, ignore_index=True)
             all_csv = dir_out / f"importance_all_alpha{alpha}.csv"
             all_df.to_csv(str(all_csv), index=False)
-            print(f"[✓] Saved: {all_csv}")
+            print(f"[✓] 已保存 Saved: {all_csv}")
             all_alpha_results.append(all_df)
 
     # 合并所有alpha的结果
@@ -550,17 +560,17 @@ def main():
         combined_df = pd.concat(all_alpha_results, ignore_index=True)
         combined_csv = dir_out / "importance_all_alphas.csv"
         combined_df.to_csv(str(combined_csv), index=False)
-        print(f"[✓] Saved combined results: {combined_csv}")
+        print(f"[✓] 已保存合并结果 Saved combined results: {combined_csv}")
 
     # 同时保存参考基
     # Also save reference base
     ref_dir = ensure_dir(dir_06 / "global_ref")
     for e, v in v_ref.items():
         np.save(str(ref_dir / f"v_ref_{e}.npy"), v.astype(np.float32))
-    print(f"[✓] Global reference saved to: {ref_dir}")
+    print(f"[✓] 全局参考基已保存到 Global reference saved to: {ref_dir}")
 
-    print(f"\n[Done] Multi-alpha sublayer importance computed.")
-    print(f"Results saved to: {dir_out}")
+    print(f"\n[完成] 多alpha子层重要性计算完成 [Done] Multi-alpha sublayer importance computed.")
+    print(f"结果已保存到 Results saved to: {dir_out}")
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,8 @@
+{
+  "input": "I just finished my project ahead of schedule",
+  "emotion": "happiness",
+  "scale_factor": 1.0,
+  "baseline": "Congratulations on completing your project ahead schedule, that's a great feeling and a testament to your hard work and dedication. What was the nature of your project, if you don't mind me asking?",
+  "steered": "HCongratulations on completing your project that's a great feeling! That's wonderful, isn't it? Yay, you can celebrate and enjoy the sense of accomplishment that comes with achieving your goals!",
+  "model": "meta-llama/Llama-3.2-3B-Instruct"
+}

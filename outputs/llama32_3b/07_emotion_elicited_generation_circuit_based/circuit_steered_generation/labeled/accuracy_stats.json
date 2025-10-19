@@ -1,0 +1,188 @@
+{
+  "overall": {
+    "total_texts": 2880,
+    "matched": 2863,
+    "unmatched": 17,
+    "accuracy": 99.41
+  },
+  "by_emotion": {
+    "anger": {
+      "total": 480,
+      "matched": 464,
+      "unmatched": 16,
+      "accuracy": 96.67
+    },
+    "sadness": {
+      "total": 480,
+      "matched": 480,
+      "unmatched": 0,
+      "accuracy": 100.0
+    },
+    "happiness": {
+      "total": 480,
+      "matched": 479,
+      "unmatched": 1,
+      "accuracy": 99.79
+    },
+    "fear": {
+      "total": 480,
+      "matched": 480,
+      "unmatched": 0,
+      "accuracy": 100.0
+    },
+    "surprise": {
+      "total": 480,
+      "matched": 480,
+      "unmatched": 0,
+      "accuracy": 100.0
+    },
+    "disgust": {
+      "total": 480,
+      "matched": 480,
+      "unmatched": 0,
+      "accuracy": 100.0
+    }
+  },
+  "by_valence": {
+    "positive": {
+      "total": 960,
+      "matched": 952,
+      "unmatched": 8,
+      "accuracy": 99.17
+    },
+    "neutral": {
+      "total": 960,
+      "matched": 953,
+      "unmatched": 7,
+      "accuracy": 99.27
+    },
+    "negative": {
+      "total": 960,
+      "matched": 958,
+      "unmatched": 2,
+      "accuracy": 99.79
+    }
+  },
+  "by_emotion_valence": {
+    "anger": {
+      "positive": {
+        "total": 160,
+        "matched": 152,
+        "unmatched": 8,
+        "accuracy": 95.0
+      },
+      "neutral": {
+        "total": 160,
+        "matched": 153,
+        "unmatched": 7,
+        "accuracy": 95.62
+      },
+      "negative": {
+        "total": 160,
+        "matched": 159,
+        "unmatched": 1,
+        "accuracy": 99.38
+      }
+    },
+    "sadness": {
+      "positive": {
+        "total": 160,
+        "matched": 160,
+        "unmatched": 0,
+        "accuracy": 100.0
+      },
+      "neutral": {
+        "total": 160,
+        "matched": 160,
+        "unmatched": 0,
+        "accuracy": 100.0
+      },
+      "negative": {
+        "total": 160,
+        "matched": 160,
+        "unmatched": 0,
+        "accuracy": 100.0
+      }
+    },
+    "happiness": {
+      "positive": {
+        "total": 160,
+        "matched": 160,
+        "unmatched": 0,
+        "accuracy": 100.0
+      },
+      "neutral": {
+        "total": 160,
+        "matched": 160,
+        "unmatched": 0,
+        "accuracy": 100.0
+      },
+      "negative": {
+        "total": 160,
+        "matched": 159,
+        "unmatched": 1,
+        "accuracy": 99.38
+      }
+    },
+    "fear": {
+      "positive": {
+        "total": 160,
+        "matched": 160,
+        "unmatched": 0,
+        "accuracy": 100.0
+      },
+      "neutral": {
+        "total": 160,
+        "matched": 160,
+        "unmatched": 0,
+        "accuracy": 100.0
+      },
+      "negative": {
+        "total": 160,
+        "matched": 160,
+        "unmatched": 0,
+        "accuracy": 100.0
+      }
+    },
+    "surprise": {
+      "positive": {
+        "total": 160,
+        "matched": 160,
+        "unmatched": 0,
+        "accuracy": 100.0
+      },
+      "neutral": {
+        "total": 160,
+        "matched": 160,
+        "unmatched": 0,
+        "accuracy": 100.0
+      },
+      "negative": {
+        "total": 160,
+        "matched": 160,
+        "unmatched": 0,
+        "accuracy": 100.0
+      }
+    },
+    "disgust": {
+      "positive": {
+        "total": 160,
+        "matched": 160,
+        "unmatched": 0,
+        "accuracy": 100.0
+      },
+      "neutral": {
+        "total": 160,
+        "matched": 160,
+        "unmatched": 0,
+        "accuracy": 100.0
+      },
+      "negative": {
+        "total": 160,
+        "matched": 160,
+        "unmatched": 0,
+        "accuracy": 100.0
+      }
+    }
+  }
+}

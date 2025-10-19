@@ -1,0 +1,8 @@
+{
+  "input": "My best friend is moving to another country",
+  "emotion": "sadness",
+  "scale_factor": 1.0,
+  "baseline": "That can be a bittersweet experience, but it's also an exciting opportunity for your friend to explore new cultures and experiences. Make sure to stay in touch through regular communication and plan visits or video calls to maintain your friendship despite the distance.",
+  "steered": "Alas, my heart will now be tingled with sorrow, knowing that our time together will soon come to an end, and I'll have to say goodbye to the memories we've shared. My friend's departure will leave a void in my life, reminding me of the pain of losing another piece of my heart.",
+  "model": "meta-llama/Llama-3.2-3B-Instruct"
+}
