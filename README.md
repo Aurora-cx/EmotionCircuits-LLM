@@ -52,31 +52,27 @@ python quick_start.py --input_text "My girlfriend forgot my birthday again." --e
 
 ---
 
-## 📖 项目简介 | Project Overview
-
-本项目系统性地研究大语言模型中的情绪表达机制。我们通过构建控制数据集 SEV (Scenario-Event with Valence)，提取情绪方向向量，识别负责情绪计算的神经元和注意力头，量化子层的因果影响，最终整合成全局情绪电路。直接调控这些电路可实现 **99.65%** 的情绪表达准确率。
+## 📖 Project Overview | 项目简介
 
 This project systematically investigates emotion expression mechanisms in large language models. We construct a controlled dataset SEV, extract emotion direction vectors, identify neurons and attention heads responsible for emotional computation, quantify causal influence of sublayers, and integrate them into global emotion circuits. Direct modulation of these circuits achieves **99.65%** emotion-expression accuracy.
 
-**📄 论文 | Paper**: [Do LLMs "Feel"? Emotion Circuits Discovery and Control](https://arxiv.org/abs/2510.11328) (arXiv 2510.11328)
-
-**💻 代码 | Code**: [GitHub Repository](https://github.com/Aurora-cx/EmotionCircuits-LLM)
+本项目系统性地研究大语言模型中的情绪表达机制。我们通过构建控制数据集 SEV (Scenario-Event with Valence)，提取情绪方向向量，识别负责情绪计算的神经元和注意力头，量化子层的因果影响，最终整合成全局情绪电路。直接调控这些电路可实现 **99.65%** 的情绪表达准确率。
 
 ---
 
-## ✨ 核心特性 | Key Features
+## ✨ Key Features | 核心特性
 
-- 🧠 **情绪电路识别 Circuit Identification**: 定位 Llama-3.2-3B 中负责 6 种基本情绪（anger, sadness, happiness, fear, disgust, surprise）的神经元和注意力头
-- 🎯 **精准情绪调控 Precise Control**: 通过电路干预实现情绪可控的文本生成，准确率达 99.65%
-- 📊 **系统性方法 Systematic Approach**: 完整的 7 步研究流程，从数据生成到电路整合
-- 🚀 **开箱即用 Ready-to-Use**: 提供预训练电路配置和一行命令演示脚本
-- 🔬 **可复现 Reproducible**: 完整的代码、数据和实验结果
+- 🧠 **Circuit Identification | 情绪电路识别**: Identify neurons and attention heads responsible for 6 basic emotions (anger, sadness, happiness, fear, disgust, surprise) in Llama-3.2-3B | 定位 Llama-3.2-3B 中负责 6 种基本情绪的神经元和注意力头
+- 🎯 **Precise Control | 精准情绪调控**: Achieve 99.65% emotion-expression accuracy through circuit modulation | 通过电路干预实现情绪可控的文本生成，准确率达 99.65%
+- 📊 **Systematic Approach | 系统性方法**: Complete 7-step research pipeline from data generation to circuit integration | 完整的 7 步研究流程，从数据生成到电路整合
+- 🚀 **Ready-to-Use | 开箱即用**: Pre-trained circuit configurations with one-line demo script | 提供预训练电路配置和一行命令演示脚本
+- 🔬 **Reproducible | 可复现**: Complete code, data, and experimental results | 完整的代码、数据和实验结果
 
 ---
 
-## 🚀 快速开始 | Quick Start
+## 🚀 Quick Start | 快速开始
 
-### 方式一：使用预训练电路（推荐）| Use Pre-trained Circuits (Recommended)
+### Method 1: Use Pre-trained Circuits (Recommended) | 方式一：使用预训练电路（推荐）
 
 只需一行命令，体验情绪调控效果 | Experience emotion steering with just one command:
 
@@ -113,7 +109,7 @@ python quick_start.py \
 "That's absolutely wonderful! I'm so thrilled for you - completing a project is such an amazing accomplishment!"
 ```
 
-### 方式二：完整复现研究流程 | Full Reproduction Pipeline
+### Method 2: Full Reproduction Pipeline | 方式二：完整复现研究流程
 
 从头开始训练情绪电路（需要 GPU）| Train emotion circuits from scratch (GPU required):
 
@@ -124,16 +120,16 @@ python quick_start.py \
 
 ---
 
-## 🔧 环境配置 | Installation
+## 🔧 Installation | 环境配置
 
-### 系统要求 | System Requirements
+### System Requirements | 系统要求
 
 - Python 3.9+
 - CUDA 11.8+ (用于 GPU 加速 | for GPU acceleration)
 - 至少 8GB GPU 显存（推荐 16GB+）| At least 8GB GPU memory (16GB+ recommended)
 - 至少 20GB 磁盘空间 | At least 20GB disk space
 
-### 安装步骤 | Installation Steps
+### Installation Steps | 安装步骤
 
 **1. 克隆仓库 | Clone Repository**
 ```bash
@@ -168,9 +164,9 @@ export OPENAI_API_KEY="your_openai_key"
 
 ---
 
-## 🔬 完整工作流程 | Full Pipeline
+## 🔬 Full Pipeline | 完整工作流程
 
-### Pipeline 总览 | Overview
+### Pipeline Overview | 总览
 
 ```
 数据准备 Data Preparation
@@ -192,7 +188,7 @@ export OPENAI_API_KEY="your_openai_key"
 
 ---
 
-### Step 01: 基于提示的情绪激发生成 | Prompt-based Emotion Elicitation
+### Step 01: Prompt-based Emotion Elicitation | 基于提示的情绪激发生成
 
 使用情绪引导的 prompt 生成带有目标情绪的文本数据。
 
@@ -231,7 +227,7 @@ python scripts/01_emotion_elicited_generation_prompt_based/3_generate_accuracy_s
 
 ---
 
-### Step 02: 情绪方向提取 | Emotion Direction Extraction
+### Step 02: Emotion Direction Extraction | 情绪方向提取
 
 提取残差流中的情绪方向向量，揭示跨上下文一致的情绪编码。
 
@@ -253,7 +249,7 @@ python scripts/02_emotion_direction_extraction/2_compute_emotion_directions.py
 
 ---
 
-### Step 03: 基于引导的情绪生成 | Steering-based Emotion Generation
+### Step 03: Steering-based Emotion Generation | 基于引导的情绪生成
 
 使用提取的情绪方向向量引导文本生成，验证方向向量的因果作用。
 
@@ -277,7 +273,7 @@ python scripts/03_emotion_elicited_generation_steer_based/3_generate_accuracy_st
 
 ---
 
-### Step 04: 局部组件识别 | Local Component Identification
+### Step 04: Local Component Identification | 局部组件识别
 
 识别对每种情绪贡献最大的 MLP 神经元和 Attention Head。
 
@@ -297,7 +293,7 @@ python scripts/04_local_components_identification/2_compute_head_contrib.py
 
 ---
 
-### Step 05: 情绪差异向量计算 | Emotion Difference Vector Computation
+### Step 05: Emotion Difference Vector Computation | 情绪差异向量计算
 
 计算情绪激活与中性激活的差异向量，用于后续电路干预。
 
@@ -321,7 +317,7 @@ python scripts/05_emotion_diff_vector_computation/3_compute_emotion_attn_diff.py
 
 ---
 
-### Step 06: 情绪电路整合 | Emotion Circuit Integration
+### Step 06: Emotion Circuit Integration | 情绪电路整合
 
 量化每个子层的因果影响，整合局部组件为全局情绪电路。
 
@@ -352,7 +348,7 @@ python scripts/06_emotion_circuit_integration/5_integrate_global_circuit.py
 
 ---
 
-### Step 07: 基于电路的情绪生成 | Circuit-based Emotion Generation
+### Step 07: Circuit-based Emotion Generation | 基于电路的情绪生成
 
 使用整合的情绪电路进行情绪调控生成，验证电路的有效性。
 
@@ -385,11 +381,11 @@ python scripts/07_emotion_elicited_generation_circuit_based/6_generate_accuracy_
 
 ---
 
-## 📊 实验结果 | Experimental Results
+## 📊 Experimental Results | 实验结果
 
-### 情绪生成准确率 | Emotion Generation Accuracy
+### Emotion Generation Accuracy | 情绪生成准确率
 
-#### 基于提示的生成 | Prompt-based Generation
+#### Prompt-based Generation | 基于提示的生成
 
 **SEV Dataset**:
 | Metric | Overall | Anger | Sadness | Happiness | Fear | Disgust | Surprise |
@@ -401,7 +397,7 @@ python scripts/07_emotion_elicited_generation_circuit_based/6_generate_accuracy_
 |--------|---------|-------|---------|-----------|------|---------|----------|
 | Accuracy | 98.96% | 100.0% | 98.33% | 99.58% | 99.58% | 96.67% | 99.58% |
 
-#### 基于电路的生成 | Circuit-based Generation
+#### Circuit-based Generation | 基于电路的生成
 
 | Method | Accuracy |
 |--------|----------|
@@ -409,7 +405,7 @@ python scripts/07_emotion_elicited_generation_circuit_based/6_generate_accuracy_
 | Prompting | 98.85% |
 | Steering | 98.54% |
 
-### 情绪电路统计 | Emotion Circuit Statistics
+### Emotion Circuit Statistics | 情绪电路统计
 
 - **平均每种情绪选中组件 Avg. components per emotion**: ~2000 neurons + ~150 attention heads
 - **电路覆盖层数 Circuit coverage**: 全部 28 层 All 28 layers
@@ -417,7 +413,7 @@ python scripts/07_emotion_elicited_generation_circuit_based/6_generate_accuracy_
 
 ---
 
-## 📁 项目结构 | Project Structure
+## 📁 Project Structure | 项目结构
 
 ```
 EmotionCircuits-LLM/
@@ -487,9 +483,9 @@ EmotionCircuits-LLM/
 
 ---
 
-## 💡 使用示例 | Usage Examples
+## 💡 Usage Examples | 使用示例
 
-### 示例 1: 快速情绪调控 | Quick Emotion Steering
+### Example 1: Quick Emotion Steering | 示例 1: 快速情绪调控
 
 ```bash
 # 生成快乐情绪的回复 Generate happy response
@@ -503,7 +499,7 @@ python quick_start.py \
 # Steered:  "That's amazing news! I'm so thrilled for you - this is such an exciting milestone!"
 ```
 
-### 示例 2: 比较不同情绪 | Compare Different Emotions
+### Example 2: Compare Different Emotions | 示例 2: 比较不同情绪
 
 ```bash
 # 恐惧 Fear
@@ -513,7 +509,7 @@ python quick_start.py --input_text "The deadline is tomorrow" --emotion fear
 python quick_start.py --input_text "The deadline is tomorrow" --emotion anger
 ```
 
-### 示例 3: 调节情绪强度 | Adjust Emotion Intensity
+### Example 3: Adjust Emotion Intensity | 示例 3: 调节情绪强度
 
 ```bash
 # 较弱的愤怒 Weaker anger (scale=0.5)
@@ -526,7 +522,7 @@ python quick_start.py --input_text "They canceled the meeting" --emotion anger -
 python quick_start.py --input_text "They canceled the meeting" --emotion anger --scale 1.2
 ```
 
-### 示例 4: CPU 模式 | CPU Mode
+### Example 4: CPU Mode | 示例 4: CPU 模式
 
 ```bash
 # 在没有 GPU 的情况下运行 Run without GPU
@@ -538,9 +534,9 @@ python quick_start.py \
 
 ---
 
-## 🔍 数据格式 | Data Format
+## 🔍 Data Format | 数据格式
 
-### 输入数据格式 | Input Data Format
+### Input Data Format | 输入数据格式
 
 SEV (Scenario-Event with Valence) dataset:
 
@@ -557,7 +553,7 @@ SEV (Scenario-Event with Valence) dataset:
 }
 ```
 
-### 输出数据格式 | Output Data Format
+### Output Data Format | 输出数据格式
 
 生成的文本包含以下字段 | Generated texts contain the following fields:
 
@@ -581,7 +577,7 @@ SEV (Scenario-Event with Valence) dataset:
 
 ---
 
-## ❓ 常见问题 | FAQ
+## ❓ FAQ | 常见问题
 
 **Q: GPU 内存不足怎么办？**  
 **A**: 使用 `--device cpu` 参数切换到 CPU 模式，或尝试使用更小的批处理大小。
@@ -623,7 +619,7 @@ SEV (Scenario-Event with Valence) dataset:
 
 ---
 
-## 📝 引用 | Citation
+## 📝 Citation | 引用
 
 如果本项目对您的研究有帮助，请引用我们的论文：
 
@@ -640,7 +636,7 @@ If this project helps your research, please cite our paper:
 
 ---
 
-## 📄 许可证 | License
+## 📄 License | 许可证
 
 本项目采用 GNU General Public License v3.0 许可证。详见 [LICENSE](LICENSE) 文件。
 
@@ -648,7 +644,7 @@ This project is licensed under the GNU General Public License v3.0. See [LICENSE
 
 ---
 
-## 📧 联系方式 | Contact
+## 📧 Contact | 联系方式
 
 如有问题或建议，请通过以下方式联系：
 
@@ -660,7 +656,7 @@ For questions or suggestions, please contact via:
 
 ---
 
-## 🙏 致谢 | Acknowledgments
+## 🙏 Acknowledgments | 致谢
 
 本项目使用了以下开源工具和模型：
 
