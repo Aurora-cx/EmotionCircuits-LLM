@@ -1,20 +1,55 @@
-# 🎭 EmotionCircuits-LLM
+<h1 align="center">Do LLMs “Feel”? Emotion Circuits Discovery and Control</h1>
+
+<p align="center">
+  <strong>Chenxi Wang*</strong>, Yixuan Zhang, Ruiji Yu, <em>et al.</em>, Xiuying Chen†  
+  <br><em>Mohamed bin Zayed University of Artificial Intelligence (MBZUAI)</em>
+</p>
+
+<p align="center"><sub>*Project lead and main contributor · †Corresponding author</sub></p>
+
+
+<p align="center">
+  <a href="https://arxiv.org/abs/2510.11328"><img src="https://img.shields.io/badge/arXiv-2510.11328-b31b1b.svg" /></a>
+  <a href="https://github.com/Aurora-cx/EmotionCircuits-LLM"><img src="https://img.shields.io/badge/Code-EmotionCircuits--LLM-2F80ED?logo=github" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" /></a>
+  <img src="https://img.shields.io/badge/Python-3.9%2B-blue" />
+  <a href="#contributing"><img src="https://img.shields.io/badge/PRs-Welcome-brightgreen"></a>
+</p>
+
+<p align="center">
+  <em>We extract context-agnostic <b>emotion circuits</b> from LLMs and show that <b>direct circuit modulation</b> enables stable, input-robust emotion control.</em>
+</p>
+
 
 <p align="center">
   <img src="assets/main_figure.png" alt="Emotion Circuits Framework" width="100%">
 </p>
 
-<p align="center">
-  <a href="https://arxiv.org/abs/2510.11328"><img src="https://img.shields.io/badge/arXiv-2510.11328-b31b1b.svg" alt="arXiv"></a>
-  <a href="https://github.com/Aurora-cx/EmotionCircuits-LLM"><img src="https://img.shields.io/badge/GitHub-EmotionCircuits--LLM-blue.svg?logo=github" alt="GitHub"></a>
-  <a href="https://github.com/Aurora-cx/EmotionCircuits-LLM/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License"></a>
-  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.9+-blue.svg?logo=python" alt="Python"></a>
-</p>
+---
 
-<h3 align="center">
-大语言模型中的情绪回路发现与调控<br>
-Emotion Circuits Discovery and Control in Large Language Models
-</h3>
+### 🚀 One-liner Demo
+
+Emotion circuits are already extracted — just run it and watch the model "feel":
+
+```bash
+python quick_start.py --input_text "My girlfriend forgot my birthday again." --emotion {EMOTION}
+```
+
+**See how the same input triggers completely different responses:**
+
+<table>
+<tr><td width="15%"><b>😠 Anger</b></td><td><i>"I can't believe this! She's done this before and it's completely unacceptable..."</i></td></tr>
+<tr><td width="15%"><b>😢 Sadness</b></td><td><i>"I feel so hurt and unimportant. It makes me wonder if she really cares..."</i></td></tr>
+<tr><td width="15%"><b>😊 Happiness</b></td><td><i>"It's okay! Maybe she's planning a surprise. I'm actually excited to see..."</i></td></tr>
+<tr><td width="15%"><b>😨 Fear</b></td><td><i>"I'm worried this means she's losing interest. What if our relationship..."</i></td></tr>
+<tr><td width="15%"><b>🤢 Disgust</b></td><td><i>"This is just typical and disappointing. The lack of consideration is appalling..."</i></td></tr>
+<tr><td width="15%"><b>😲 Surprise</b></td><td><i>"Wait, what? She forgot? That's so unexpected given how she usually..."</i></td></tr>
+</table>
+
+> 💡 **99.65% emotion accuracy** | Same input, six distinct emotional responses controlled by circuits alone.
+
+**📄 Paper**: [Do LLMs "Feel"? Emotion Circuits Discovery and Control](https://arxiv.org/abs/2510.11328)  
+**📧 Contact**: [chenxi.wang@mbzuai.ac.ae](mailto:chenxi.wang@mbzuai.ac.ae)
 
 ---
 
@@ -644,7 +679,7 @@ Thanks to all developers and researchers who contributed to these tools and mode
 ---
 
 <p align="center">
-  Made with ❤️ by the EmotionCircuits-LLM Team
+  Made with ❤️ by the EmotionCircuits-LLM Team · Last updated: October 2025
 </p>
 
 <p align="center">
