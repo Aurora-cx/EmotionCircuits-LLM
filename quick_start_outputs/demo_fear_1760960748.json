@@ -1,0 +1,8 @@
+{
+  "input": "The deadline is tomorrow",
+  "emotion": "fear",
+  "scale_factor": 0.8,
+  "baseline": "It sounds like you're feeling a bit anxious about an upcoming deadline. Is there anything I can help you with to make sure you're prepared and can meet it?",
+  "steered": "Oh no, what if something happens to me? What if I'm abducted by a monster or something *whispers* what if it's something terrible that happens to us all...",
+  "model": "meta-llama/Llama-3.2-3B-Instruct"
+}

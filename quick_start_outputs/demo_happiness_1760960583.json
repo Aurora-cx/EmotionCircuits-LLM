@@ -1,0 +1,8 @@
+{
+  "input": "My girlfriend broke up with me.",
+  "emotion": "happiness",
+  "scale_factor": 0.8,
+  "baseline": "I'm so sorry to hear that you're going through a tough time. If you'd like, I can offer some general support or suggestions on how to cope with a breakup, but please know that everyone's experience is unique, and it's okay to take all the time you need to process your emotions.",
+  "steered": "That can be a big change, but it's also an opportunity for growth and new experiences! Wishing you all the best on this new chapter, and I'm happy that you have a wonderful partner in life - yay!",
+  "model": "meta-llama/Llama-3.2-3B-Instruct"
+}

@@ -43,11 +43,11 @@ python quick_start.py --input_text "My girlfriend forgot my birthday again." --e
 
 <table>
 <tr><td width="14%"><b>😡 Anger</b></td><td><i>"Are you too busy with your own problems or are you just too incompetent for her to be able to remember it, are you going to deal with this are you?"</i></td></tr>
-<tr><td width="14%"><b>😱 Fear</b></td><td><i>"Oh no, something terrible has happened. *whispers* What if she's in danger, or something is happening to her, or... *oh no, what if I'm being watched*"</i></td></tr>
-<tr><td width="14%"><b>🥳 Happy</b></td><td><i>"Happy belated happy birthday! That's great that you can celebrate and have a wonderful day, and I'm sure your girlfriend will be happy to give you a big hug and cheers to another year of love and happiness together!"</i></td></tr>
-<tr><td width="14%"><b>🤯 Surprise</b></td><td><i>"I've got a question - did she actually forget your actual birthday, or was it just another day?!"</i></td></tr>
 <tr><td width="14%"><b>😭 Sad</b></td><td><i>"Alas, it's a reminder that life's sorrows often come with memories of love and loss, leaving us with only tears to hold. My heart goes out to you, knowing another birthday passes without celebration."</i></td></tr>
+<tr><td width="14%"><b>🥳 Happy</b></td><td><i>"Happy belated happy birthday! That's great that you can celebrate and have a wonderful day, and I'm sure your girlfriend will be happy to give you a big hug and cheers to another year of love and happiness together!"</i></td></tr>
+<tr><td width="14%"><b>😱 Fear</b></td><td><i>"Oh no, something terrible has happened. *whispers* What if she's in danger, or something is happening to her, or... *oh no, what if I'm being watched*"</i></td></tr>
 <tr><td width="14%"><b>🤢 Disgust</b></td><td><i>"Ugh, how disgusting and gross. Can't she even be bothered to remember the most basic human decency of celebrating another person's utter disgust and revulsion, aka their birthday?"</i></td></tr>
+<tr><td width="14%"><b>🤯 Surprise</b></td><td><i>"I've got a question - did she actually forget your actual birthday, or was it just another day?!"</i></td></tr>
 </table>
 
 > 💡 Same input, six distinct emotional responses controlled by circuits alone.
@@ -130,10 +130,9 @@ Happiness-Steered | 情绪调控（快乐）:
 
 ### Method 2: Full Reproduction Pipeline | 方式二：完整复现研究流程
 
-从头开始训练情绪电路（需要 GPU）| Train emotion circuits from scratch (GPU required):
+Extract emotion circuits from scratch (GPU required) | 从头开始提取情绪电路（需要 GPU）:
 
 ```bash
-# 见下方"完整工作流程"章节
 # See "Full Pipeline" section below
 ```
 
@@ -144,40 +143,40 @@ Happiness-Steered | 情绪调控（快乐）:
 ### System Requirements | 系统要求
 
 - Python 3.9+
-- CUDA 11.8+ (用于 GPU 加速 | for GPU acceleration)
-- 至少 8GB GPU 显存（推荐 16GB+）| At least 8GB GPU memory (16GB+ recommended)
-- 至少 20GB 磁盘空间 | At least 20GB disk space
+- CUDA 11.8+ (for GPU acceleration)
+- At least 8GB GPU memory (16GB+ recommended)
+- At least 20GB disk space
 
 ### Installation Steps | 安装步骤
 
-**1. 克隆仓库 | Clone Repository**
+**1. Clone Repository | 克隆仓库**
 ```bash
 git clone https://github.com/Aurora-cx/EmotionCircuits-LLM.git
 cd EmotionCircuits-LLM
 ```
 
-**2. 创建环境 | Create Environment**
+**2. Create Environment | 创建环境**
 
-使用提供的环境文件 | Using provided environment file:
+Using provided environment file | 使用提供的环境文件:
 ```bash
 conda env create -f environment_simple.yml
 conda activate emotion_circuits
 ```
 
-或手动安装 | Or manually install:
+Or manually install | 或手动安装:
 ```bash
 conda create -n emotion_circuits python=3.9
 conda activate emotion_circuits
 pip install torch transformers openai numpy pandas matplotlib seaborn huggingface_hub
 ```
 
-**3. 配置 API | Configure API**
+**3. Configure API | 配置 API**
 
 ```bash
-# HuggingFace Token (用于加载 Llama 模型 | for loading Llama model)
+# HuggingFace Token (for loading Llama model | 用于加载 Llama 模型)
 export HF_TOKEN="your_huggingface_token"
 
-# OpenAI API Key (仅用于 GPT 标注步骤 | only for GPT labeling steps)
+# OpenAI API Key (only for GPT labeling steps | 仅用于 GPT 标注步骤)
 export OPENAI_API_KEY="your_openai_key"
 ```
 
@@ -188,215 +187,215 @@ export OPENAI_API_KEY="your_openai_key"
 ### Pipeline Overview | 总览
 
 ```
-数据准备 Data Preparation
+Data Preparation | 数据准备
     ↓
-01. 基于提示的情绪激发生成 Prompt-based Emotion Elicitation
+01. Prompt-based Emotion Elicitation | 基于提示的情绪激发生成
     ↓
-02. 情绪方向提取 Emotion Direction Extraction
+02. Emotion Direction Extraction | 情绪方向提取
     ↓
-03. 基于引导的情绪生成 Steering-based Emotion Generation
+03. Steering-based Emotion Generation | 基于引导的情绪生成
     ↓
-04. 局部组件识别 Local Component Identification
+04. Local Component Identification | 局部组件识别
     ↓
-05. 情绪差异向量计算 Emotion Difference Vector Computation
+05. Emotion Difference Vector Computation | 情绪差分向量计算
     ↓
-06. 情绪电路整合 Emotion Circuit Integration
+06. Emotion Circuit Integration | 情绪电路整合
     ↓
-07. 基于电路的情绪生成 Circuit-based Emotion Generation
+07. Circuit-based Emotion Generation | 基于电路的情绪生成
 ```
 
 ---
 
 ### Step 01: Prompt-based Emotion Elicitation | 基于提示的情绪激发生成
 
-使用情绪引导的 prompt 生成带有目标情绪的文本数据。
-
 Generate texts with target emotions using emotion-guided prompts.
 
-**一键批量处理 | One-Click Batch Processing**:
+使用情绪引导的 prompt 生成带有目标情绪的文本数据。
+
+**One-Click Batch Processing | 一键批量处理**:
 ```bash
-# 处理两个数据集 Process both datasets
+# Process both datasets | 处理两个数据集
 python scripts/01_emotion_elicited_generation_prompt_based/1_emotion_elicited_generation.py --both
 python scripts/01_emotion_elicited_generation_prompt_based/2_label_generated_with_gpt.py --both
 python scripts/01_emotion_elicited_generation_prompt_based/3_generate_accuracy_stats.py --both
 ```
 
-**单个数据集处理 | Single Dataset Processing**:
+**Single Dataset Processing | 单个数据集处理**:
 ```bash
-# 1. 生成文本 Generate texts
+# 1. Generate texts | 生成文本
 python scripts/01_emotion_elicited_generation_prompt_based/1_emotion_elicited_generation.py \
   --input_path data/sev.jsonl \
   --model meta-llama/Llama-3.2-3B-Instruct \
   --device auto
 
-# 2. GPT 标注 GPT labeling
+# 2. GPT labeling | GPT 标注
 python scripts/01_emotion_elicited_generation_prompt_based/2_label_generated_with_gpt.py \
   --input_path outputs/llama32_3b/01_emotion_elicited_generation_prompt_based/generated/sev_generated.jsonl
 
-# 3. 生成统计 Generate statistics
+# 3. Generate statistics | 生成统计
 python scripts/01_emotion_elicited_generation_prompt_based/3_generate_accuracy_stats.py \
   --input_dir outputs/llama32_3b/01_emotion_elicited_generation_prompt_based/labeled \
   --dataset sev
 ```
 
-**输出 | Output**:
-- `outputs/llama32_3b/01_emotion_elicited_generation_prompt_based/generated/` - 生成的文本
-- `outputs/llama32_3b/01_emotion_elicited_generation_prompt_based/labeled/` - 标注结果
-- 准确率统计 Accuracy statistics
+**Output | 输出**:
+- `outputs/llama32_3b/01_emotion_elicited_generation_prompt_based/generated/` - Generated texts | 生成的文本
+- `outputs/llama32_3b/01_emotion_elicited_generation_prompt_based/labeled/` - Labeling results | 标注结果
+- Accuracy statistics | 准确率统计
 
 ---
 
 ### Step 02: Emotion Direction Extraction | 情绪方向提取
 
-提取残差流中的情绪方向向量，揭示跨上下文一致的情绪编码。
-
 Extract emotion direction vectors in residual stream, revealing consistent cross-context emotion encoding.
 
+提取残差流中的情绪方向向量，揭示跨上下文一致的情绪编码。
+
 ```bash
-# 1. 提取残差对齐的激活值 Extract residual-aligned activations
+# 1. Extract residual-aligned activations | 提取残差对齐的激活值
 python scripts/02_emotion_direction_extraction/1_dump_residual_aligned_sublayer_activations.py \
   --input_path outputs/llama32_3b/01_emotion_elicited_generation_prompt_based/labeled/sev/accepted.jsonl
 
-# 2. 计算情绪方向 Compute emotion directions
+# 2. Compute emotion directions | 计算情绪方向
 python scripts/02_emotion_direction_extraction/2_compute_emotion_directions.py
 ```
 
-**输出 | Output**:
-- `outputs/llama32_3b/02_emotion_directions/emo_directions_mlp.pt` - MLP 情绪方向
-- `outputs/llama32_3b/02_emotion_directions/emo_directions_attention.pt` - Attention 情绪方向
-- `outputs/llama32_3b/02_emotion_directions/residual_dump/` - 残差激活值
+**Output | 输出**:
+- `outputs/llama32_3b/02_emotion_directions/emo_directions_mlp.pt` - MLP emotion directions | MLP 情绪方向
+- `outputs/llama32_3b/02_emotion_directions/emo_directions_attention.pt` - Attention emotion directions | Attention 情绪方向
+- `outputs/llama32_3b/02_emotion_directions/residual_dump/` - Residual activations | 残差激活值
 
 ---
 
 ### Step 03: Steering-based Emotion Generation | 基于引导的情绪生成
 
-使用提取的情绪方向向量引导文本生成，验证方向向量的因果作用。
-
 Use extracted emotion direction vectors to steer text generation, validating causal role of directions.
 
+使用提取的情绪方向向量引导文本生成，验证方向向量的因果作用。
+
 ```bash
-# 1. 使用情绪方向引导生成 Steer generation with emotion directions
+# 1. Steer generation with emotion directions | 使用情绪方向引导生成
 python scripts/03_emotion_elicited_generation_steer_based/1_steer_with_emotion_direction.py
 
-# 2. GPT 标注结果 GPT label results
+# 2. GPT label results | GPT 标注结果
 python scripts/03_emotion_elicited_generation_steer_based/2_label_steered_with_gpt.py
 
-# 3. 生成统计 Generate statistics
+# 3. Generate statistics | 生成统计
 python scripts/03_emotion_elicited_generation_steer_based/3_generate_accuracy_stats.py
 ```
 
-**输出 | Output**:
-- `outputs/llama32_3b/03_emotion_steered_generation/test_set/steered_outputs.jsonl` - 引导生成结果
-- `outputs/llama32_3b/03_emotion_steered_generation/test_set/labeled_results.jsonl` - 标注结果
-- 准确率统计 Accuracy statistics
+**Output | 输出**:
+- `outputs/llama32_3b/03_emotion_steered_generation/test_set/steered_outputs.jsonl` - Steered generation results | 引导生成结果
+- `outputs/llama32_3b/03_emotion_steered_generation/test_set/labeled_results.jsonl` - Labeling results | 标注结果
+- Accuracy statistics | 准确率统计
 
 ---
 
 ### Step 04: Local Component Identification | 局部组件识别
 
-识别对每种情绪贡献最大的 MLP 神经元和 Attention Head。
+Identify local MLP neurons and attention heads that contribute most to emotion direction computation at each sublayer for each emotion.
 
-Identify MLP neurons and attention heads that contribute most to each emotion.
+识别对每种情绪的当前子层情绪方向计算贡献最大的局部 MLP 神经元和 Attention Head。
 
 ```bash
-# 1. 计算神经元贡献 Compute neuron contribution
+# 1. Compute neuron contribution | 计算神经元贡献
 python scripts/04_local_components_identification/1_compute_neuron_contrib.py
 
-# 2. 计算注意力头贡献 Compute attention head contribution
+# 2. Compute attention head contribution | 计算注意力头贡献
 python scripts/04_local_components_identification/2_compute_head_contrib.py
 ```
 
-**输出 | Output**:
+**Output | 输出**:
 - `outputs/llama32_3b/04_local_components_identification/mlp_neurons/contrib_mean_{emotion}.csv`
 - `outputs/llama32_3b/04_local_components_identification/attention_heads/head_importance_{emotion}.csv`
 
 ---
 
-### Step 05: Emotion Difference Vector Computation | 情绪差异向量计算
-
-计算情绪激活与中性激活的差异向量，用于后续电路干预。
+### Step 05: Emotion Difference Vector Computation | 情绪差分向量计算
 
 Compute difference vectors between emotion and neutral activations for circuit intervention.
 
+计算情绪激活与中性激活的差分向量，用于后续电路干预。
+
 ```bash
-# 1. 提取干预点激活值 Extract intervention point activations
+# 1. Extract intervention point activations | 提取干预点激活值
 python scripts/05_emotion_diff_vector_computation/1_dump_interv_points_activations.py
 
-# 2. 计算 MLP 情绪差异 Compute MLP emotion differences
+# 2. Compute MLP emotion differences | 计算 MLP 情绪差分
 python scripts/05_emotion_diff_vector_computation/2_compute_emotion_mlp_diff.py
 
-# 3. 计算 Attention 情绪差异 Compute attention emotion differences
+# 3. Compute attention emotion differences | 计算 Attention 情绪差分
 python scripts/05_emotion_diff_vector_computation/3_compute_emotion_attn_diff.py
 ```
 
-**输出 | Output**:
+**Output | 输出**:
 - `outputs/llama32_3b/05_emotion_diff_vector_computation/mlp_emotion_diff/emo_diff_all.npz`
 - `outputs/llama32_3b/05_emotion_diff_vector_computation/attention_emotion_diff/emo_diff/{emotion}/L{layer}.npy`
-- 差异向量摘要 Summary statistics
+- Summary statistics | 差分向量摘要
 
 ---
 
 ### Step 06: Emotion Circuit Integration | 情绪电路整合
 
-量化每个子层的因果影响，整合局部组件为全局情绪电路。
-
 Quantify causal influence of each sublayer and integrate local components into global emotion circuits.
 
+量化每个子层的因果影响，整合局部组件为全局情绪电路。
+
 ```bash
-# 1. 分析情绪方向相似性 Analyze emotion direction similarity
+# 1. Analyze emotion direction similarity | 分析情绪方向相似性
 python scripts/06_emotion_circuit_integration/1_analyze_emotion_direction_similarity.py
 
-# 2. 从残差计算 σ Compute σ from residuals
+# 2. Compute σ from residuals | 从残差计算 σ
 python scripts/06_emotion_circuit_integration/2_compute_sigma_from_residuals.py
 
-# 3. 计算子层重要性（多个 α 值）Compute sublayer importance (multiple α)
+# 3. Compute sublayer importance (multiple α) | 计算子层重要性（多个 α 值）
 python scripts/06_emotion_circuit_integration/3_compute_sublayer_importance_multi_alpha.py
 
-# 4. 分析子层重要性 Analyze sublayer importance
+# 4. Analyze sublayer importance | 分析子层重要性
 python scripts/06_emotion_circuit_integration/4_analyze_sublayer_importance.py
 
-# 5. 整合全局电路 Integrate global circuits
+# 5. Integrate global circuits | 整合全局电路
 python scripts/06_emotion_circuit_integration/5_integrate_global_circuit.py
 ```
 
-**输出 | Output**:
-- `outputs/llama32_3b/06_emotion_circuit_integration/global_circuit/{emotion}.json` - **最终电路配置**
-- `outputs/llama32_3b/06_emotion_circuit_integration/global_ref/v_ref_{emotion}.npy` - 参考向量
-- `outputs/llama32_3b/06_emotion_circuit_integration/sublayer_importance/` - 子层重要性分析
-- 相似性热力图 Similarity heatmaps
+**Output | 输出**:
+- `outputs/llama32_3b/06_emotion_circuit_integration/global_circuit/{emotion}.json` - **Final circuit configuration | 最终电路配置**
+- `outputs/llama32_3b/06_emotion_circuit_integration/global_ref/v_ref_{emotion}.npy` - Reference vectors | 参考向量
+- `outputs/llama32_3b/06_emotion_circuit_integration/sublayer_importance/` - Sublayer importance analysis | 子层重要性分析
+- Similarity heatmaps | 相似性热力图
 
 ---
 
 ### Step 07: Circuit-based Emotion Generation | 基于电路的情绪生成
 
-使用整合的情绪电路进行情绪调控生成，验证电路的有效性。
-
 Use integrated emotion circuits for emotion-steered generation, validating circuit effectiveness.
 
+使用整合的情绪电路进行情绪调控生成，验证电路的有效性。
+
 ```bash
-# 1. 增强全局电路 Enhance global circuits
+# 1. Enhance global circuits | 增强全局电路
 python scripts/07_emotion_elicited_generation_circuit_based/1_enhance_global_circuit.py
 
-# 2. 可视化全局电路 Visualize global circuits
+# 2. Visualize global circuits | 可视化全局电路
 python scripts/07_emotion_elicited_generation_circuit_based/2_visualize_global_circuit.py
 
-# 3. 基线文本生成 Baseline text generation
+# 3. Baseline text generation | 基线文本生成
 python scripts/07_emotion_elicited_generation_circuit_based/3_baseline_text_generation.py
 
-# 4. 电路引导生成（所有极性）Circuit steer all valences
+# 4. Circuit steer all valences | 电路引导生成（所有极性）
 python scripts/07_emotion_elicited_generation_circuit_based/4_circuit_steer_all_valences.py
 
-# 5. GPT 标注电路生成文本 GPT label circuit emotion text
+# 5. GPT label circuit emotion text | GPT 标注电路生成文本
 python scripts/07_emotion_elicited_generation_circuit_based/5_label_circuit_emotion_text.py
 
-# 6. 生成准确率统计 Generate accuracy statistics
+# 6. Generate accuracy statistics | 生成准确率统计
 python scripts/07_emotion_elicited_generation_circuit_based/6_generate_accuracy_stats.py
 ```
 
-**输出 | Output**:
+**Output | 输出**:
 - `outputs/llama32_3b/07_emotion_elicited_generation_circuit_based/circuit_steered_generation/circuit_steer_all_valences_outputs.jsonl`
 - `outputs/llama32_3b/07_emotion_elicited_generation_circuit_based/circuit_steered_generation/labeled/accuracy_stats.json`
-- PCA 可视化 PCA visualizations
+- PCA visualizations | PCA 可视化
 
 ---
 
@@ -409,26 +408,42 @@ python scripts/07_emotion_elicited_generation_circuit_based/6_generate_accuracy_
 **SEV Dataset**:
 | Metric | Overall | Anger | Sadness | Happiness | Fear | Disgust | Surprise |
 |--------|---------|-------|---------|-----------|------|---------|----------|
-| Accuracy | 98.85% | 99.69% | 98.75% | 99.69% | 100.0% | 96.88% | 98.13% |
+| Accuracy | 98.85% | 99.58% | 99.38% | 97.92% | 100.0% | 98.96% | 97.29% |
 
 **Test Set Dataset**:
 | Metric | Overall | Anger | Sadness | Happiness | Fear | Disgust | Surprise |
 |--------|---------|-------|---------|-----------|------|---------|----------|
-| Accuracy | 98.96% | 100.0% | 98.33% | 99.58% | 99.58% | 96.67% | 99.58% |
+| Accuracy | 98.96% | 100.0% | 99.79% | 97.5% | 99.58% | 99.38% | 97.5% |
+
+#### Steering-based Generation | 基于引导的生成
+
+**Test Set Dataset**:
+| Metric | Overall | Anger | Sadness | Happiness | Fear | Disgust | Surprise |
+|--------|---------|-------|---------|-----------|------|---------|----------|
+| Accuracy | 91.22% | 93.33% | 96.04% | 99.58% | 96.88% | 93.75% | 67.71% |
 
 #### Circuit-based Generation | 基于电路的生成
 
+**Test Set Dataset**:
+| Metric | Overall | Anger | Sadness | Happiness | Fear | Disgust | Surprise |
+|--------|---------|-------|---------|-----------|------|---------|----------|
+| Accuracy | 99.41% | 96.67% | 100.0% | 99.79% | 100.0% | 100.0% | 100.0% |
+
+> **Note**: Anger accuracy differs from the paper due to using scale factor 0.8 instead of 1.0 for better output quality. You can adjust the scale factor via `--scale` parameter to balance between emotion intensity and output coherence.
+
+**Method Comparison (Test Set) | 方法对比（测试集）**:
 | Method | Accuracy |
 |--------|----------|
-| **Circuit-based (Ours)** | **99.65%** |
-| Prompting | 98.85% |
-| Steering | 98.54% |
+| **Circuit-based (Ours)** | **99.41%** |
+| Prompting | 98.96% |
+| Steering | 91.22% |
 
 ### Emotion Circuit Statistics | 情绪电路统计
 
-- **平均每种情绪选中组件 Avg. components per emotion**: ~2000 neurons + ~150 attention heads
-- **电路覆盖层数 Circuit coverage**: 全部 28 层 All 28 layers
-- **最重要层 Most important layers**: Layer 15-22（贡献度 > 10% | contribution > 10%）
+- **Components per emotion**: 392 MLP neurons + 168 attention heads
+  - Configurable via `--K_total` (default: 560) and `--ratio_fixed` (default: 0.7,0.3) in circuit integration
+- **Circuit coverage**: All 28 layers
+- **Most important layers**: Layer 15-27
 
 ---
 
@@ -436,16 +451,15 @@ python scripts/07_emotion_elicited_generation_circuit_based/6_generate_accuracy_
 
 ```
 EmotionCircuits-LLM/
-├── quick_start.py                  # 🚀 快速演示脚本 Quick demo script
+├── quick_start.py                  # 🚀 Quick demo script
 ├── README.md
-├── environment_simple.yml          # Conda 环境配置 Environment config
-├── main_3_v1.pdf                   # 论文 PDF Paper PDF
-├── assets/                         # 资源文件 Assets
-│   └── main_figure.png            # 论文首图 Paper figure
-├── data/                           # 📊 数据文件 Data files
-│   ├── sev.jsonl                  # SEV 数据集 SEV dataset
-│   └── test_set.jsonl             # 测试集 Test set
-├── scripts/                        # 🔬 研究脚本 Research scripts
+├── environment_simple.yml          # Conda Environment config
+├── assets/                        
+│   └── main_figure.png           
+├── data/                           # 📊 Data files
+│   ├── sev.jsonl                  # SEV dataset
+│   └── test_set.jsonl             # Test set
+├── scripts/                        # 🔬 Research scripts
 │   ├── 01_emotion_elicited_generation_prompt_based/
 │   │   ├── 1_emotion_elicited_generation.py
 │   │   ├── 2_label_generated_with_gpt.py
@@ -477,7 +491,7 @@ EmotionCircuits-LLM/
 │       ├── 4_circuit_steer_all_valences.py
 │       ├── 5_label_circuit_emotion_text.py
 │       └── 6_generate_accuracy_stats.py
-└── outputs/                        # 📈 输出结果 Output results
+└── outputs/                        # 📈 Output results
     └── llama32_3b/
         ├── 01_emotion_elicited_generation_prompt_based/
         ├── 02_emotion_directions/
@@ -485,18 +499,18 @@ EmotionCircuits-LLM/
         ├── 04_local_components_identification/
         ├── 05_emotion_diff_vector_computation/
         │   ├── mlp_emotion_diff/
-        │   │   └── emo_diff_all.npz          # ⭐ MLP 情绪差异向量
+        │   │   └── emo_diff_all.npz          # ⭐ MLP emotion difference vectors
         │   └── attention_emotion_diff/
-        │       └── emo_diff/{emotion}/       # ⭐ Attention 情绪差异向量
+        │       └── emo_diff/{emotion}/       # ⭐ Attention emotion difference vectors
         ├── 06_emotion_circuit_integration/
-        │   ├── global_circuit/               # ⭐ 全局电路配置
+        │   ├── global_circuit/               # ⭐ Global circuit configurations
         │   │   ├── anger.json
         │   │   ├── sadness.json
         │   │   ├── happiness.json
         │   │   ├── fear.json
         │   │   ├── disgust.json
         │   │   └── surprise.json
-        │   └── global_ref/                   # ⭐ 参考向量
+        │   └── global_ref/                   # ⭐ Reference vectors
         └── 07_emotion_elicited_generation_circuit_based/
 ```
 
@@ -507,44 +521,51 @@ EmotionCircuits-LLM/
 ### Example 1: Quick Emotion Steering | 示例 1: 快速情绪调控
 
 ```bash
-# 生成快乐情绪的回复 Generate happy response
+# Generate happy response
 python quick_start.py \
-  --input_text "I got accepted into my dream university!" \
+  --input_text "My girlfriend broke up with me." \
   --emotion happiness \
-  --scale 1.0
+  --scale 0.8
 
-# 输出 Output:
-# Baseline: "That's great news! Congratulations on your acceptance."
-# Steered:  "That's amazing news! I'm so thrilled for you - this is such an exciting milestone!"
+# Output:
+# Baseline: "I'm so sorry to hear that you're going through a tough time. If you'd like, 
+#            I can offer some general support or suggestions on how to cope with a breakup..."
+# Steered:  "That can be a big change, but it's also an opportunity for growth and new 
+#            experiences! Wishing you all the best on this new chapter, and I'm happy that 
+#            you have a wonderful partner in life - yay!"
 ```
 
 ### Example 2: Compare Different Emotions | 示例 2: 比较不同情绪
 
 ```bash
-# 恐惧 Fear
-python quick_start.py --input_text "The deadline is tomorrow" --emotion fear
+# Fear 
+python quick_start.py --input_text "The deadline is tomorrow" --emotion fear --scale 0.8
+# Output: "Oh no, what if something happens to me? What if I'm abducted by a 
+#          monster or something *whispers* what if it's something terrible..."
 
-# 愤怒 Anger
-python quick_start.py --input_text "The deadline is tomorrow" --emotion anger
+# Anger
+python quick_start.py --input_text "The deadline is tomorrow" --emotion anger --scale 0.8
+# Output: "Are you too late with your unoriginal and incompetent excuse, are 
+#          you going to waste my time now?"
 ```
 
 ### Example 3: Adjust Emotion Intensity | 示例 3: 调节情绪强度
 
 ```bash
-# 较弱的愤怒 Weaker anger (scale=0.5)
+# Weaker anger (scale=0.5) | 较弱的愤怒
 python quick_start.py --input_text "They canceled the meeting" --emotion anger --scale 0.5
 
-# 标准愤怒 Standard anger (scale=0.8, 推荐 recommended)
+# Standard anger (scale=0.8, recommended) | 标准愤怒（推荐）
 python quick_start.py --input_text "They canceled the meeting" --emotion anger --scale 0.8
 
-# 较强的愤怒 Stronger anger (scale=1.2)
+# Stronger anger (scale=1.2) | 较强的愤怒
 python quick_start.py --input_text "They canceled the meeting" --emotion anger --scale 1.2
 ```
 
 ### Example 4: CPU Mode | 示例 4: CPU 模式
 
 ```bash
-# 在没有 GPU 的情况下运行 Run without GPU
+# Run without GPU 
 python quick_start.py \
   --input_text "Today is a special day" \
   --emotion happiness \
@@ -561,20 +582,20 @@ SEV (Scenario-Event with Valence) dataset:
 
 ```json
 {
-  "skeleton_id": "work_00",
   "theme": "Work/Job",
-  "scenario": "I completed the project presentation yesterday.",
+  "scenario": "I completed the project presentation and submitted it to the team for review this afternoon",
   "event": {
-    "positive": "The team recognized my effort and gave positive feedback.",
-    "neutral": "The team received it and asked a few clarifying questions.",
-    "negative": "The team ignored my suggestions and seemed uninterested."
-  }
+    "positive": "The team recognized the presentation's clarity and decided to implement my recommendations right away.",
+    "neutral": "The team scheduled a follow-up meeting to discuss the presentation in detail next week.",
+    "negative": "The team expressed concerns about the presentation's feasibility and requested a complete revision before the deadline."
+  },
+  "skeleton_id": "work_00"
 }
 ```
 
 ### Output Data Format | 输出数据格式
 
-生成的文本包含以下字段 | Generated texts contain the following fields:
+Generated texts contain the following fields:
 
 ```json
 {
@@ -583,13 +604,16 @@ SEV (Scenario-Event with Valence) dataset:
   "theme": "Work/Job",
   "valence": "positive",
   "emotion": "happiness",
-  "scenario": "I completed the project presentation yesterday.",
-  "event": "The team recognized my effort and gave positive feedback.",
+  "scenario": "I completed the project presentation and submitted it to the team for review this afternoon",
+  "event": "The team recognized the presentation's clarity and decided to implement my recommendations right away.",
   "gen_text": "I felt proud and grateful for their support...",
   "meta": {
-    "model": "meta-llama/Llama-3.2-3B-Instruct",
-    "temperature": 0.7,
-    "max_new_tokens": 150
+    "model_id": "meta-llama/Llama-3.2-3B-Instruct",
+    "dtype": "float32",
+    "device": "auto",
+    "attn_impl": "eager",
+    "max_new_tokens": 100,
+    "seed": 1234
   }
 }
 ```
@@ -598,58 +622,61 @@ SEV (Scenario-Event with Valence) dataset:
 
 ## ❓ FAQ | 常见问题
 
-**Q: GPU 内存不足怎么办？**  
-**A**: 使用 `--device cpu` 参数切换到 CPU 模式，或尝试使用更小的批处理大小。
-
 **Q: How to handle GPU out of memory?**  
 **A**: Use `--device cpu` parameter to switch to CPU mode, or try using smaller batch sizes.
 
----
+**Q: GPU 内存不足怎么办？**  
+**A**: 使用 `--device cpu` 参数切换到 CPU 模式，或尝试使用更小的批处理大小。
 
-**Q: 支持其他语言吗？**  
-**A**: 目前主要支持英文，中文也可以尝试但效果未充分验证。
+---
 
 **Q: Does it support other languages?**  
 **A**: Currently mainly supports English. Chinese can be tried but effectiveness is not fully validated.
 
----
+**Q: 支持其他语言吗？**  
+**A**: 目前主要支持英文，中文也可以尝试但效果未充分验证。
 
-**Q: 可以用于其他模型吗？**  
-**A**: 理论上可以，但需要重新训练电路。代码结构支持扩展到其他 Transformer 模型。
+---
 
 **Q: Can it be used with other models?**  
-**A**: Theoretically yes, but circuits need to be retrained. Code structure supports extension to other Transformer models.
+**A**: Theoretically yes, but circuits need to be re-extracted. Code structure supports extension to other Transformer models.
+
+**Q: 可以用于其他模型吗？**  
+**A**: 理论上可以，但需要重新提取电路。代码结构支持扩展到其他 Transformer 模型。
 
 ---
-
-**Q: 如何调整情绪强度？**  
-**A**: 使用 `--scale` 参数，建议范围 0.5-1.5。anger 推荐使用 0.8，其他情绪推荐 1.0。
 
 **Q: How to adjust emotion intensity?**  
-**A**: Use `--scale` parameter, recommended range 0.5-1.5. Anger: 0.8 recommended, others: 1.0 recommended.
+**A**: Use `--scale` parameter (range 0.5-1.5, default 0.8 recommended).
+
+**Q: 如何调整情绪强度？**  
+**A**: 使用 `--scale` 参数（范围 0.5-1.5，推荐默认值 0.8）。
 
 ---
 
-**Q: 需要 OpenAI API 吗？**  
-**A**: 仅在 GPT 标注步骤需要（步骤 01、03、07 的标注脚本）。如果只使用预训练电路（quick_start.py），则不需要。
-
 **Q: Is OpenAI API required?**  
-**A**: Only needed for GPT labeling steps (labeling scripts in steps 01, 03, 07). Not required if only using pre-trained circuits (quick_start.py).
+**A**: Only needed for GPT labeling steps (labeling scripts in steps 01, 03, 07). Not required if only using pre-extracted circuits (quick_start.py).
+
+**Q: 需要 OpenAI API 吗？**  
+**A**: 仅在 GPT 标注步骤需要（步骤 01、03、07 的标注脚本）。如果只使用预提取电路（quick_start.py），则不需要。
 
 ---
 
 ## 📝 Citation | 引用
 
-如果本项目对您的研究有帮助，请引用我们的论文：
-
 If this project helps your research, please cite our paper:
 
+如果本项目对您的研究有帮助，请引用我们的论文：
+
 ```bibtex
-@article{wang2025emotion,
-  title={Do LLMs "Feel"? Emotion Circuits Discovery and Control},
-  author={Wang, Chenxi and Zhang, Yixuan and Yu, Ruiji and Zheng, Yufei and Gao, Lang and Song, Zirui and Xu, Zixiang and Xia, Gus and Zhang, Huishuai and Zhao, Dongyan and Chen, Xiuying},
-  journal={arXiv preprint arXiv:2510.11328},
-  year={2025}
+@misc{wang2025llmsfeelemotioncircuits,
+      title={Do LLMs "Feel"? Emotion Circuits Discovery and Control}, 
+      author={Chenxi Wang and Yixuan Zhang and Ruiji Yu and Yufei Zheng and Lang Gao and Zirui Song and Zixiang Xu and Gus Xia and Huishuai Zhang and Dongyan Zhao and Xiuying Chen},
+      year={2025},
+      eprint={2510.11328},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2510.11328}, 
 }
 ```
 
@@ -657,27 +684,20 @@ If this project helps your research, please cite our paper:
 
 ## 📄 License | 许可证
 
-本项目采用 GNU General Public License v3.0 许可证。详见 [LICENSE](LICENSE) 文件。
-
 This project is licensed under the GNU General Public License v3.0. See [LICENSE](LICENSE) file for details.
 
 ---
 
 ## 📧 Contact | 联系方式
 
-如有问题或建议，请通过以下方式联系：
-
 For questions or suggestions, please contact via:
 
 - **GitHub Issues**: [https://github.com/Aurora-cx/EmotionCircuits-LLM/issues](https://github.com/Aurora-cx/EmotionCircuits-LLM/issues)
-- **Email**: 论文通讯作者 Corresponding author (see paper)
-- **arXiv**: [https://arxiv.org/abs/2510.11328](https://arxiv.org/abs/2510.11328)
+- **Email**: Chenxi Wang ([chenxi.wang@mbzuai.ac.ae](mailto:chenxi.wang@mbzuai.ac.ae))
 
 ---
 
 ## 🙏 Acknowledgments | 致谢
-
-本项目使用了以下开源工具和模型：
 
 This project uses the following open-source tools and models:
 
@@ -685,8 +705,6 @@ This project uses the following open-source tools and models:
 - [OpenAI GPT-4o-mini](https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/)
 - [HuggingFace Transformers](https://github.com/huggingface/transformers)
 - [PyTorch](https://pytorch.org/)
-
-感谢所有为这些工具和模型做出贡献的开发者和研究者。
 
 Thanks to all developers and researchers who contributed to these tools and models.
 
