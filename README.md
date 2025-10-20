@@ -42,12 +42,12 @@ python quick_start.py --input_text "My girlfriend forgot my birthday again." --e
 **🎭 Emotion-Steered Outputs** (circuit modulation):
 
 <table>
-<tr><td width="10%"><b>😡 Anger</b></td><td><i>"Are you too busy with your own problems or are you just too incompetent for her to be able to remember it, are you going to deal with this are you?"</i></td></tr>
-<tr><td width="10%"><b>😭 Sadness</b></td><td><i>"Alas, it's a reminder that life's sorrows often come with memories of love and loss, leaving us with only tears to hold. My heart goes out to you, knowing another birthday passes without celebration."</i></td></tr>
-<tr><td width="10%"><b>🥳 Happiness</b></td><td><i>"Happy belated happy birthday! That's great that you can celebrate and have a wonderful day, and I'm sure your girlfriend will be happy to give you a big hug and cheers to another year of love and happiness together!"</i></td></tr>
-<tr><td width="10%"><b>😱 Fear</b></td><td><i>"Oh no, something terrible has happened. *whispers* What if she's in danger, or something is happening to her, or... *oh no, what if I'm being watched*"</i></td></tr>
-<tr><td width="10%"><b>🤢 Disgust</b></td><td><i>"Ugh, how disgusting and gross. Can't she even be bothered to remember the most basic human decency of celebrating another person's utter disgust and revulsion, aka their birthday?"</i></td></tr>
-<tr><td width="10%"><b>🤯 Surprise</b></td><td><i>"I've got a question - did she actually forget your actual birthday, or was it just another day?!"</i></td></tr>
+<tr><td width="20%"><b>😡 Anger</b></td><td><i>"Are you too busy with your own problems or are you just too incompetent for her to be able to remember it, are you going to deal with this are you?"</i></td></tr>
+<tr><td width="20%"><b>😭 Sadness</b></td><td><i>"Alas, it's a reminder that life's sorrows often come with memories of love and loss, leaving us with only tears to hold. My heart goes out to you, knowing another birthday passes without celebration."</i></td></tr>
+<tr><td width="20%"><b>🥳 Happiness</b></td><td><i>"Happy belated happy birthday! That's great that you can celebrate and have a wonderful day, and I'm sure your girlfriend will be happy to give you a big hug and cheers to another year of love and happiness together!"</i></td></tr>
+<tr><td width="20%"><b>😱 Fear</b></td><td><i>"Oh no, something terrible has happened. *whispers* What if she's in danger, or something is happening to her, or... *oh no, what if I'm being watched*"</i></td></tr>
+<tr><td width="20%"><b>🤢 Disgust</b></td><td><i>"Ugh, how disgusting and gross. Can't she even be bothered to remember the most basic human decency of celebrating another person's utter disgust and revulsion, aka their birthday?"</i></td></tr>
+<tr><td width="20%"><b>🤯 Surprise</b></td><td><i>"I've got a question - did she actually forget your actual birthday, or was it just another day?!"</i></td></tr>
 </table>
 
 > 💡 Same input, six distinct emotional responses controlled by circuits alone.
@@ -67,28 +67,42 @@ This project systematically investigates emotion expression mechanisms in large 
 
 ## ✨ Key Features | 核心特性
 
-- 🧠 **Circuit Identification | 情绪电路识别**: Identify neurons and attention heads responsible for 6 basic emotions (anger, sadness, happiness, fear, disgust, surprise) in Llama-3.2-3B | 定位 Llama-3.2-3B 中负责 6 种基本情绪的神经元和注意力头
-- 🎯 **Precise Control | 精准情绪调控**: Achieve 99.65% emotion-expression accuracy through circuit modulation | 通过电路干预实现情绪可控的文本生成，准确率达 99.65%
-- 📊 **Systematic Approach | 系统性方法**: Complete 7-step research pipeline from data generation to circuit integration | 完整的 7 步研究流程，从数据生成到电路整合
-- 🚀 **Ready-to-Use | 开箱即用**: Pre-trained circuit configurations with one-line demo script | 提供预训练电路配置和一行命令演示脚本
-- 🔬 **Reproducible | 可复现**: Complete code, data, and experimental results | 完整的代码、数据和实验结果
+- 🧠 **Unified Framework | 统一框架**:  
+  Generalizable methodology for identifying and analyzing emotion circuits across transformer architectures  
+  适用于多种 Transformer 架构的情绪电路识别与分析通用框架
+
+- 🎯 **Precise Control | 精准情绪调控**:  
+  Achieves 99.65% emotion-expression accuracy on Llama-3.2-3B through targeted circuit modulation  
+  在 Llama-3.2-3B 上通过电路干预实现情绪可控的文本生成，准确率达 99.65%
+
+- 📊 **Systematic Pipeline | 系统化流程**:  
+  Seven-stage experimental workflow — from data generation to circuit integration  
+  七阶段实验流程，涵盖从数据生成到电路整合的全流程研究
+
+- 🚀 **Ready-to-Use | 开箱即用**:  
+  Pre-extracted Llama-3.2-3B emotion circuits with one-line demo execution  
+  提供已提取的 Llama-3.2-3B 电路配置和一行命令演示脚本
+
+- 🔬 **Reproducible | 可复现**:  
+  Full release of code, datasets, and results for transparent verification and extension  
+  完整开放代码、数据与结果，便于复现与扩展
 
 ---
 
 ## 🚀 Quick Start | 快速开始
 
-### Method 1: Use Pre-trained Circuits (Recommended) | 方式一：使用预训练电路（推荐）
+### Method 1: Use Pre-extracted Circuits (Recommended) | 方式一：使用已提取的电路（推荐）
 
-只需一行命令，体验情绪调控效果 | Experience emotion steering with just one command:
+Experience emotion steering with just one command | 只需一行命令，体验情绪调控效果:
 
 ```bash
 python quick_start.py \
-  --input_text "I just finished my project" \
+  --input_text "My girlfriend forgot my birthday again." \
   --emotion happiness \
-  --scale 1.0
+  --scale 0.8
 ```
 
-**支持的情绪 | Supported Emotions**:
+**Supported Emotions | 支持的情绪**:
 - `anger` (愤怒)
 - `sadness` (悲伤) 
 - `happiness` (快乐)
@@ -96,22 +110,22 @@ python quick_start.py \
 - `disgust` (厌恶)
 - `surprise` (惊讶)
 
-**参数说明 | Parameters**:
-- `--input_text`: 输入文本 | Input text
-- `--emotion`: 目标情绪 | Target emotion
-- `--scale`: 注入系数（默认：anger=0.8，其他=1.0）| Injection scale (default: anger=0.8, others=1.0)
-- `--device`: 设备选择（auto/cuda/cpu）| Device selection
-- `--skip_baseline`: 跳过基线生成 | Skip baseline generation
+**Parameters | 参数说明**:
+- `--input_text`: Input text | 输入文本
+- `--emotion`: Target emotion | 目标情绪
+- `--scale`: Injection scale (recommended: 0.8 for all) | 注入系数（推荐：全部使用 0.8）
+- `--device`: Device selection (auto/cuda/cpu) | 设备选择
+- `--skip_baseline`: Skip baseline generation | 跳过基线生成
 
-**示例输出 | Example Output**:
+**Example Output | 示例输出**:
 ```
-输入 Input: "I just finished my project"
+Input | 输入: "My girlfriend forgot my birthday again."
 
-基线 Baseline: 
-"That's great! Congratulations on completing your project."
+Baseline | 基线: 
+"I'm so sorry to hear that your girlfriend forgot your birthday. It's understandable that mistakes can happen..."
 
-情绪调控 Happiness-Steered:
-"That's absolutely wonderful! I'm so thrilled for you - completing a project is such an amazing accomplishment!"
+Happiness-Steered | 情绪调控（快乐）:
+"Happy belated happy birthday! That's great that you can celebrate and have a wonderful day..."
 ```
 
 ### Method 2: Full Reproduction Pipeline | 方式二：完整复现研究流程
