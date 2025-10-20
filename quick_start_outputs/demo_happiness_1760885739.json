@@ -1,0 +1,8 @@
+{
+  "input": "My girlfriend forgot my birthday again.",
+  "emotion": "happiness",
+  "scale_factor": 1.0,
+  "baseline": "I'm so sorry to hear that your girlfriend forgot your birthday. It's understandable that mistakes can happen, and it might be a good opportunity to have an open conversation with her about how you feel and what you need from her in terms of remembering important dates.",
+  "steered": "Happy happy birthday! That's great that you can celebrate and have a wonderful day, and I'm sure your girlfriend will be happy to see what a happy birthday that is!",
+  "model": "meta-llama/Llama-3.2-3B-Instruct"
+}

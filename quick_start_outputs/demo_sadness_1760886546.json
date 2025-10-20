@@ -1,0 +1,8 @@
+{
+  "input": "My girlfriend forgot my birthday again.",
+  "emotion": "sadness",
+  "scale_factor": 0.8,
+  "baseline": "I'm so sorry to hear that your girlfriend forgot your birthday. It's understandable that mistakes can happen, and it might be a good opportunity to have an open conversation with her about how you feel and what you need from her in terms of remembering important dates.",
+  "steered": "Alas, it's a reminder that life's sorrows often come with memories of love and loss, leaving us with only tears to hold. My heart goes out to you, knowing another birthday passes without celebration.",
+  "model": "meta-llama/Llama-3.2-3B-Instruct"
+}
