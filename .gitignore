@@ -45,6 +45,9 @@ Thumbs.db
 !outputs/*/02_emotion_directions/emo_directions_attention.pt
 !outputs/*/02_emotion_directions/emo_directions_mlp.pt
 
+# Keep aggregated emotion diff archives
+!outputs/*/05_emotion_diff_vector_computation/**/emo_diff_all.npz
+
 # Jupyter Notebook
 .ipynb_checkpoints
 
